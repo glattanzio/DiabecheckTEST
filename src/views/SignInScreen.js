@@ -14,32 +14,30 @@ const SignInScreen = ({ navigation }) => {
       await signInWithEmailAndPassword(auth, email, password);
       // Obtener el token del usuario autenticado
       const token = await auth.currentUser.getIdToken();
-      
-      // Obtener el rol del usuario desde el backend
-      const response = await fetch(`http://10.0.2.2:8000/user-role/?email=${encodeURIComponent(email)}`, {
+      // Obtener el rol del usuario desde el backend 10.0.2.2
+      const response = await fetch(`http://192.168.0.119:8000/user-role/?email=${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`, 
         },
       });
-
       if (!response.ok) {
         throw new Error('Error al obtener el rol del usuario');
       }
       
       const data = await response.json();
-      const role = data.role;
 
+      const role = data.Rol;
       await AsyncStorage.setItem('token', token);
 
       // Navegar a la pantalla adecuada basada en el rol del usuario
-      if (role === 'medico') {
-        const medicoId = data.medico_id;
+      if (role === 'Medico') {
+        const medicoId = data.IdUsuario;
         await AsyncStorage.setItem('medicoId', medicoId.toString());
         navigation.navigate('Medico Home View', { medicoId });
-      } else if (role === 'paciente') {
-        const pacienteId = data.paciente_id;
+      } else if (role === 'Paciente') {
+        const pacienteId = data.IdUsuario;
         await AsyncStorage.setItem('pacienteId', pacienteId.toString());
         navigation.navigate('Cargar Medicion'); 
       } else {

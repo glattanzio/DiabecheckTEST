@@ -1,4 +1,5 @@
-const API_URL = 'http://10.0.2.2:8000/mediciones'; // Para emulador de Android
+//const API_URL = 'http://10.0.2.2:8000/mediciones/'; // Para emulador de Android
+const API_URL = 'http://192.168.0.119:8000/mediciones/'; // Para emulador de Android
 
 
 export const getData = async () => {

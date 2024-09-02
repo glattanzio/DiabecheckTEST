@@ -29,7 +29,7 @@ const MedicoHomeView = ({ navigation }) => {
       try {
         const token = await auth.currentUser.getIdToken();
         if (medicoId) {
-          const response = await fetch(`http://10.0.2.2:8000/pacientes/${medicoId}/?search_query=${encodeURIComponent(searchQuery)}`, {
+          const response = await fetch(`http://192.168.0.119:8000/pacientes/${medicoId}/?search_query=${encodeURIComponent(searchQuery)}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -68,16 +68,15 @@ const MedicoHomeView = ({ navigation }) => {
   const renderPatient = ({ item }) => (
     <View style={styles.patientContainer}>
       <View>
-        <Text style={styles.patientName}>{`${item.apellido} ${item.nombre}`}</Text>
-        <Text style={styles.patientInfo}>{`${calculateAge(item.fechaNacimiento)} AÑOS`}</Text>
-        <Text style={styles.patientInfo}>{item.coberturaMedica}</Text>
+        <Text style={styles.patientName}>{`${item.Apellido} ${item.Nombre}`}</Text>
+        <Text style={styles.patientInfo}>{`${calculateAge(item.FechaNacimiento)} AÑOS`}</Text>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('HistoriaMedica', { patientId: item.id })} style={styles.arrowContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('HistoriaMedica', { patientId: item.IdUsuario })} style={styles.arrowContainer}>
         <Text style={styles.arrow}>&gt;</Text>
       </TouchableOpacity>
     </View>
   );
-
+ //<!--<Text style={styles.patientInfo}>{item.CoberturaMedica}</Text>-->
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
@@ -90,7 +89,7 @@ const MedicoHomeView = ({ navigation }) => {
       <FlatList
         data={patients}
         renderItem={renderPatient}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.IdUsuario.toString()}
       />
     </View>
   );
