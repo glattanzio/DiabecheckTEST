@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../services/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_IP } from '../services/apiService';
 
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ const SignInScreen = ({ navigation }) => {
       // Obtener el token del usuario autenticado
       const token = await auth.currentUser.getIdToken();
       // Obtener el rol del usuario desde el backend 10.0.2.2
-      const response = await fetch(`http://192.168.0.119:8000/user-role/?email=${encodeURIComponent(email)}`, {
+      const response = await fetch(`http://${API_IP}:8000/user-role/?email=${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

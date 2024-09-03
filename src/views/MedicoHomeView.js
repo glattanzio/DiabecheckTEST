@@ -3,6 +3,7 @@ import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'r
 import { auth } from '../services/firebase';
 import Header from '../components/Header';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_IP } from '../services/apiService';
 
 const MedicoHomeView = ({ navigation }) => {
   const [medicoId, setMedicoId] = useState(null);
@@ -29,7 +30,7 @@ const MedicoHomeView = ({ navigation }) => {
       try {
         const token = await auth.currentUser.getIdToken();
         if (medicoId) {
-          const response = await fetch(`http://192.168.0.119:8000/pacientes/${medicoId}/?search_query=${encodeURIComponent(searchQuery)}`, {
+          const response = await fetch(`http://${API_IP}:8000/pacientes/${medicoId}/?search_query=${encodeURIComponent(searchQuery)}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

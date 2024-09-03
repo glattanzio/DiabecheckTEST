@@ -1,10 +1,10 @@
-//const API_URL = 'http://10.0.2.2:8000/mediciones/'; // Para emulador de Android
-const API_URL = 'http://192.168.0.119:8000/mediciones/'; // Para emulador de Android
+//export const API_IP = '10.0.2.2'; // Para emulador de Android
+export const API_IP = '192.168.100.13'; // Para emulador de Android
 
 
 export const getData = async () => {
   try {
-    const response = await fetch(`${API_URL}/data`);
+    const response = await fetch(`http://${API_IP}:8000/mediciones/data`);
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
@@ -17,7 +17,7 @@ export const getData = async () => {
 
 export const postData = async (medicion) => {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(`http://${API_IP}:8000/mediciones`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
