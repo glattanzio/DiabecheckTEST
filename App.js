@@ -8,6 +8,10 @@ import SignInScreen from './src/views/SignInScreen';
 import SignUpScreen from './src/views/SignUpScreen';
 import CargarMedicion from './src/views/CargarMedicion';
 import MedicoHomeView from './src/views/MedicoHomeView';
+import HistoriaMedicaScreen from './src/views/HistoriaMedicaScreen';
+import VerMedicionesScreen from './src/views/VerMedicionesScreen';
+import MisMedicos from './src/views/MisMedicos';
+import AgregarMedico from './src/views/AgregarMedico';
 
 
 const Stack = createStackNavigator();
@@ -39,6 +43,11 @@ const App = () => {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Cargar Medicion" component={CargarMedicion} />
         <Stack.Screen name="Medico Home View" component={MedicoHomeView} />
+        <Stack.Screen name="Historia Medica" component={HistoriaMedicaScreen} />
+        <Stack.Screen name="Ver Mediciones" component={VerMedicionesScreen} />
+        <Stack.Screen name="Mis Medicos" component={MisMedicos} />
+        <Stack.Screen name="Agregar Medico" component={AgregarMedico} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

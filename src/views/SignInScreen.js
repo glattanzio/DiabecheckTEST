@@ -15,7 +15,7 @@ const SignInScreen = ({ navigation }) => {
       await signInWithEmailAndPassword(auth, email, password);
       // Obtener el token del usuario autenticado
       const token = await auth.currentUser.getIdToken();
-      // Obtener el rol del usuario desde el backend 10.0.2.2
+      // Obtener el rol del usuario desde el backend
       const response = await fetch(`http://${API_IP}:8000/user-role/?email=${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {
@@ -34,13 +34,13 @@ const SignInScreen = ({ navigation }) => {
 
       // Navegar a la pantalla adecuada basada en el rol del usuario
       if (role === 'Medico') {
-        const medicoId = data.IdUsuario;
-        await AsyncStorage.setItem('medicoId', medicoId.toString());
+        const medicoId = data.IdUsuario; //paso el IdUsuario en vez del medicoId porque en la tabla de conexion en la db, usa el userid
+        await AsyncStorage.setItem('medicoId', medicoId.toString()); 
         navigation.navigate('Medico Home View', { medicoId });
       } else if (role === 'Paciente') {
-        const pacienteId = data.IdUsuario;
+        const pacienteId = data.IdPaciente;
         await AsyncStorage.setItem('pacienteId', pacienteId.toString());
-        navigation.navigate('Cargar Medicion'); 
+        navigation.navigate('Cargar Medicion', { pacienteId }); 
       } else {
         console.error('Rol desconocido del usuario:', role);
       }
@@ -51,21 +51,23 @@ const SignInScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign In with Email</Text>
+      <Text style={styles.title}>Iniciar Sesion</Text>
       <TextInput
         style={styles.input}
-        placeholder="Email"
+        placeholder="Correo"
+        placeholderTextColor="#999"
         value={email}
         onChangeText={(text) => setEmail(text)}
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="Contraseña"
+        placeholderTextColor="#999"
         secureTextEntry
         value={password}
         onChangeText={(text) => setPassword(text)}
       />
-      <Button title="Sign In" onPress={handleSignIn} color="#428f7a" />
+      <Button title="Ingresar" onPress={handleSignIn} color="#428f7a" />
     </View>
   );
 };

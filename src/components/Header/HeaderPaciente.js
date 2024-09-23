@@ -1,14 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Modal, Pressable } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { getAuth, signOut } from 'firebase/auth';
+import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const staticInfo = {
     name: "Diabecheck"
 };
 
-const Header = ({ navigation }) => {
+const HeaderPaciente = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
+    const [pacienteId, setPacienteId] = useState(null);
+
+    useEffect(() => {
+        const auth = getAuth();
+
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    // Obtener el pacienteId desde AsyncStorage
+                    const storedPacienteId = await AsyncStorage.getItem('pacienteId');
+                    setPacienteId(storedPacienteId);
+                } catch (error) {
+                    console.error('Error al obtener el pacienteId:', error);
+                }
+            } else {
+                setPacienteId(null);
+            }
+        });
+        return () => unsubscribe();
+    }, []);
 
     const handleSignOut = async () => {
         const auth = getAuth();
@@ -17,6 +38,24 @@ const Header = ({ navigation }) => {
             navigation.navigate('Home');  // Redirige al usuario a la pantalla de inicio
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
+        }
+    };
+
+    const handleMisMediciones = () => {
+        try {
+            setModalVisible(false); 
+            navigation.navigate('Ver Mediciones', { patientId: pacienteId });
+        } catch (error) {
+            console.error('Error al ver mediciones:', error);
+        }
+    };
+
+    const handleMisMedicos = () => {
+        try {
+            setModalVisible(false); 
+            navigation.navigate('Mis Medicos', { patientId: pacienteId });
+        } catch (error) {
+            console.error('Error al ver medicos', error);
         }
     };
 
@@ -38,6 +77,12 @@ const Header = ({ navigation }) => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
+                        <Pressable style={styles.modalButton} onPress={handleMisMediciones}>
+                            <Text style={styles.modalButtonText}>Mis Mediciones</Text>
+                        </Pressable>
+                        <Pressable style={styles.modalButton} onPress={handleMisMedicos}>
+                            <Text style={styles.modalButtonText}>Mis Medicos</Text>
+                        </Pressable>
                         <Pressable style={styles.modalButton} onPress={handleSignOut}>
                             <Text style={styles.modalButtonText}>Cerrar Sesión</Text>
                         </Pressable>
@@ -69,6 +114,10 @@ const styles = StyleSheet.create({
         fontSize: 26,
         textAlign: 'center',
     },
+    userId: {
+        fontSize: 14,
+        color: '#fff',
+    },
     menu: {
         marginRight: 10,               
     },
@@ -97,4 +146,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Header;
+export default HeaderPaciente;

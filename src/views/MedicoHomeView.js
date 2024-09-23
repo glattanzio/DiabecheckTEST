@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { auth } from '../services/firebase';
-import Header from '../components/Header';
+import HeaderMedico from '../components/Header/HeaderMedico';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_IP } from '../services/apiService';
 
@@ -24,13 +24,12 @@ const MedicoHomeView = ({ navigation }) => {
 
     fetchMedicoId();
   }, []);
-
   useEffect(() => {
     const fetchPatients = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
         if (medicoId) {
-          const response = await fetch(`http://${API_IP}:8000/pacientes/${medicoId}/?search_query=${encodeURIComponent(searchQuery)}`, {
+          const response = await fetch(`http://${API_IP}:8000/listado_pacientes/${medicoId}/?search_query=${encodeURIComponent(searchQuery)}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -53,6 +52,7 @@ const MedicoHomeView = ({ navigation }) => {
     fetchPatients();
   }, [medicoId, searchQuery]);
 
+
   const calculateAge = (birthDate) => {
     const today = new Date();
     const birthDateObj = new Date(birthDate);
@@ -71,19 +71,20 @@ const MedicoHomeView = ({ navigation }) => {
       <View>
         <Text style={styles.patientName}>{`${item.Apellido} ${item.Nombre}`}</Text>
         <Text style={styles.patientInfo}>{`${calculateAge(item.FechaNacimiento)} AÑOS`}</Text>
+        <Text style={styles.patientInfo}>{item.coberturaMedica}</Text>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('HistoriaMedica', { patientId: item.IdUsuario })} style={styles.arrowContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('Historia Medica', { patientId: item.IdUsuario })} style={styles.arrowContainer}>
         <Text style={styles.arrow}>&gt;</Text>
       </TouchableOpacity>
     </View>
   );
- //<!--<Text style={styles.patientInfo}>{item.CoberturaMedica}</Text>-->
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} />
+      <HeaderMedico navigation={navigation} />
       <TextInput
         style={styles.searchBar}
         placeholder="Buscar paciente por apellido o DNI"
+        placeholderTextColor="#999"
         value={searchQuery}
         onChangeText={text => setSearchQuery(text)}
       />

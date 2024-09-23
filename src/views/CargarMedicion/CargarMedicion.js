@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import Header from '../../components/Header';
+import HeaderPaciente from '../../components/Header';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
@@ -9,13 +9,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const CargarMedicion = ({ navigation }) => {
+  const [pacienteId, setPacienteId] = useState(null);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [glucose, setGlucose] = useState('');
   const [insulin, setInsulin] = useState('');
   const [carbs, setCarbs] = useState('');
-  
+
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -69,9 +70,10 @@ const CargarMedicion = ({ navigation }) => {
     }
   };
 
+
   return (
     <>
-      <Header navigation={navigation} />
+      <HeaderPaciente navigation={navigation} />
       <ScrollView contentContainerStyle={styles.formContainer}>
         <Text style={styles.title}>CARGAR MEDICIÓN</Text>
         <View style={styles.row}>
