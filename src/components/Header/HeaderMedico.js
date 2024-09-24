@@ -10,7 +10,7 @@ const staticInfo = {
 
 const HeaderMedico = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [pacienteId, setPacienteId] = useState(null);
+    const [medicoId, setMedicoId] = useState(null);
 
     useEffect(() => {
         const auth = getAuth();
@@ -18,14 +18,14 @@ const HeaderMedico = ({ navigation }) => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    // Obtener el pacienteId desde AsyncStorage
-                    const storedPacienteId = await AsyncStorage.getItem('pacienteId');
-                    setPacienteId(storedPacienteId);
+                    // Obtener el medicoId desde AsyncStorage
+                    const storedMedicoId = await AsyncStorage.getItem('medicoId');
+                    setMedicoId(storedMedicoId);
                 } catch (error) {
-                    console.error('Error al obtener el pacienteId:', error);
+                    console.error('Error al obtener el medicoId:', error);
                 }
             } else {
-                setPacienteId(null);
+                setMedicoId(null);
             }
         });
         return () => unsubscribe();
@@ -38,6 +38,24 @@ const HeaderMedico = ({ navigation }) => {
             navigation.navigate('Home');  // Redirige al usuario a la pantalla de inicio
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
+        }
+    };
+
+    const handleMisSolicitudes = () => {
+        try {
+            setModalVisible(false); 
+            navigation.navigate('Mis Solicitudes', {medicoId: medicoId});
+        } catch (error) {
+            console.error('Error al ver solicitudes:', error);
+        }
+    };
+
+    const handleVerPacientes = () => {
+        try {
+            setModalVisible(false); 
+            navigation.navigate('Medico Home View', {medicoId: medicoId});
+        } catch (error) {
+            console.error('Error al ver solicitudes:', error);
         }
     };
 
@@ -59,6 +77,12 @@ const HeaderMedico = ({ navigation }) => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
+                    <Pressable style={styles.modalButton} onPress={handleVerPacientes}>
+                            <Text style={styles.modalButtonText}>Pacientes</Text>
+                        </Pressable>
+                        <Pressable style={styles.modalButton} onPress={handleMisSolicitudes}>
+                            <Text style={styles.modalButtonText}>Mis Solicitudes</Text>
+                        </Pressable>
                         <Pressable style={styles.modalButton} onPress={handleSignOut}>
                             <Text style={styles.modalButtonText}>Cerrar Sesión</Text>
                         </Pressable>

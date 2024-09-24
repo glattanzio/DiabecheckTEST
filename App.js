@@ -12,6 +12,7 @@ import HistoriaMedicaScreen from './src/views/HistoriaMedicaScreen';
 import VerMedicionesScreen from './src/views/VerMedicionesScreen';
 import MisMedicos from './src/views/MisMedicos';
 import AgregarMedico from './src/views/AgregarMedico';
+import MisSolicitudes from './src/views/MisSolicitudes';
 
 
 const Stack = createStackNavigator();
@@ -47,6 +48,7 @@ const App = () => {
         <Stack.Screen name="Ver Mediciones" component={VerMedicionesScreen} />
         <Stack.Screen name="Mis Medicos" component={MisMedicos} />
         <Stack.Screen name="Agregar Medico" component={AgregarMedico} />
+        <Stack.Screen name="Mis Solicitudes" component={MisSolicitudes} />
 
       </Stack.Navigator>
     </NavigationContainer>

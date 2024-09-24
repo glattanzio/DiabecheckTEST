@@ -55,7 +55,6 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
     return age;
   };
 
-  console.log(patientData);
 
   return (
     <View style={styles.wrapper}>
