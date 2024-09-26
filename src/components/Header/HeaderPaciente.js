@@ -50,6 +50,15 @@ const HeaderPaciente = ({ navigation }) => {
         }
     };
 
+    const handleCargarMedicion = () => {
+        try {
+            setModalVisible(false); 
+            navigation.navigate('Cargar Medicion', { patientId: pacienteId });
+        } catch (error) {
+            console.error('Error al ver mediciones:', error);
+        }
+    };
+
     const handleMisMedicos = () => {
         try {
             setModalVisible(false); 
@@ -77,6 +86,9 @@ const HeaderPaciente = ({ navigation }) => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
+                        <Pressable style={styles.modalButton} onPress={handleCargarMedicion}>
+                            <Text style={styles.modalButtonText}>Cargar Medicion</Text>
+                        </Pressable>
                         <Pressable style={styles.modalButton} onPress={handleMisMediciones}>
                             <Text style={styles.modalButtonText}>Mis Mediciones</Text>
                         </Pressable>

@@ -59,43 +59,46 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
   return (
     <View style={styles.wrapper}>
       <HeaderMedico navigation={navigation} />
-
       <View style={styles.container}>
-        <Text style={styles.title}>Historia Medica</Text>
-        <Text style={styles.patientName}>{`${patientData.Apellido} ${patientData.Nombre}`}</Text>
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>DNI: {patientData.NroDocumento}</Text>
-          <Text style={styles.infoText}>Edad: {calculateAge(patientData.FechaNacimiento)} Años</Text>
-          <Text style={styles.infoText}>Diagnostico: {patientData.diagnostico}</Text>
-          <Text style={styles.infoText}>Cobertura: {patientData.coberturaMedica}</Text>
-          <Text style={styles.infoText}>Altura: {patientData.Altura} cm</Text>
-          <Text style={styles.infoText}>Peso: {patientData.Peso} kg</Text>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>HISTORIA MEDICA</Text>
         </View>
+        <View style={styles.container2}>
+          <Text style={styles.patientName}>{`${patientData.Apellido} ${patientData.Nombre}`}</Text>
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>DNI: {patientData.NroDocumento}</Text>
+            <Text style={styles.infoText}>Edad: {calculateAge(patientData.FechaNacimiento)} Años</Text>
+            <Text style={styles.infoText}>Diagnostico: {patientData.diagnostico}</Text>
+            <Text style={styles.infoText}>Cobertura: {patientData.coberturaMedica}</Text>
+            <Text style={styles.infoText}>Altura: {patientData.Altura} cm</Text>
+            <Text style={styles.infoText}>Peso: {patientData.Peso} kg</Text>
+          </View>
 
-        <TouchableOpacity style={styles.editButton} onPress={() => {/* Acción para editar la historia médica */}}>
-          <Text style={styles.editButtonText}>Editar</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.editButton} onPress={() => {/* Acción para editar la historia médica */}}>
+            <Text style={styles.editButtonText}>Editar</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Ver Mediciones', { patientId: patientData.IdPacientesInfoAdicional })}
-        >
-          <Text style={styles.buttonText}>Ver Mediciones</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Ver Mediciones', { patientId: patientData.IdPacientesInfoAdicional })}
+          >
+            <Text style={styles.buttonText}>Ver Mediciones</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Ver Documentación', { patientId: patientData.IdPacientesInfoAdicional })}
-        >
-          <Text style={styles.buttonText}>Ver Documentación</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Ver Documentación', { patientId: patientData.IdPacientesInfoAdicional })}
+          >
+            <Text style={styles.buttonText}>Ver Documentación</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Cargar Documentación', { patientId: patientData.IdPacientesInfoAdicional })}
-        >
-          <Text style={styles.buttonText}>Cargar Documentación</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.navigate('Cargar Documentación', { patientId: patientData.IdPacientesInfoAdicional })}
+          >
+            <Text style={styles.buttonText}>Cargar Documentación</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -107,7 +110,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#d3d3d3',
+  },
+  container2: {
+    flex: 1,
+    backgroundColor: '#d3d3d3',
     padding: 15,
   },
   loadingContainer: {
@@ -119,6 +126,22 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#edf1f2',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: "center",
+    marginLeft: 95,
   },
   patientName: {
     fontSize: 26,

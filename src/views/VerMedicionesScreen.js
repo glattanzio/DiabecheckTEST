@@ -139,7 +139,9 @@ const VerMedicionesScreen = ({ route, navigation }) => {
       ) : (
         <HeaderPaciente navigation={navigation} />
       )}
-      <Text style={styles.title}>Mediciones</Text>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>MEDICIONES</Text>
+      </View>
       <View style={styles.filtersContainer}>
         <DropDownPicker
           open={openMonth}
@@ -198,6 +200,23 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       textAlign: 'center',
       marginVertical: 20,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+      backgroundColor: '#edf1f2',
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+      marginBottom: 20,
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      textAlign: "center",
+      marginLeft: 115,
     },
     titleMedicion: {
         fontSize: 12,

@@ -100,13 +100,13 @@ const MedicoHomeView = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#d3d3d3',
   },
   searchBar: {
     margin: 10,
     padding: 10,
     borderRadius: 20,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#fff',
   },
   patientContainer: {
     flexDirection: 'row',

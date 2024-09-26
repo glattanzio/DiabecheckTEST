@@ -8,8 +8,8 @@ import { auth } from '../services/firebase';
 
 const MisSolicitudes = ({ route, navigation }) => {
   const [solicitudes, setSolicitudes] = useState([]);
+  const [loading, setLoading] = useState(true);  // Estado para manejar la carga de datos
   const { medicoId } = route.params;
-
 
   // Función para obtener las solicitudes pendientes del médico
   useEffect(() => {
@@ -31,6 +31,8 @@ const MisSolicitudes = ({ route, navigation }) => {
         setSolicitudes(data);
       } catch (error) {
         console.error('Error al obtener las solicitudes:', error);
+      } finally {
+        setLoading(false); // Termina la carga de datos
       }
     };
 
@@ -86,31 +88,49 @@ const MisSolicitudes = ({ route, navigation }) => {
     return age;
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <HeaderMedico navigation={navigation} />
+        <Text style={styles.loadingText}>Cargando solicitudes...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <HeaderMedico navigation={navigation} />
-      <Text style={styles.title}>MIS SOLICITUDES</Text>
-      <FlatList
-        data={solicitudes}
-        keyExtractor={item => item.IdConexionMedicoPaciente}
-        renderItem={({ item }) => (
-          <View style={styles.solicitudContainer}>
-            <Text style={styles.nombre}>{item.Nombre}</Text>
-            <Text style={styles.nombre}>{item.Apellido}</Text>
-            <Text style={styles.info}>{calculateAge(item.FechaNacimiento)} Años</Text>
-            <Text style={styles.info}>{item.coberturaMedica}</Text>
-            <View style={styles.acciones}>
-              <TouchableOpacity onPress={() => handleAceptar(item.IdConexionMedicoPaciente)}>
-                <FontAwesome name="check-circle" size={24} color="green" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleRechazar(item.IdConexionMedicoPaciente)} style={styles.rechazarIcon}>
-                <FontAwesome name="times-circle" size={24} color="red" />
-              </TouchableOpacity>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>SOLICITUDES</Text>
+      </View>
+      {solicitudes.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No tienes solicitudes pendientes</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={solicitudes}
+          keyExtractor={item => item.IdConexionMedicoPaciente.toString()}  // Asegúrate de que sea un string
+          renderItem={({ item }) => (
+            <View style={styles.solicitudContainer}>
+              <View>
+                <Text style={styles.nombre}>{item.Nombre}</Text>
+                <Text style={styles.nombre}>{item.Apellido}</Text>
+                <Text style={styles.info}>{calculateAge(item.FechaNacimiento)} Años</Text>
+                <Text style={styles.info}>{item.coberturaMedica}</Text>
+              </View>
+              <View style={styles.acciones}>
+                <TouchableOpacity onPress={() => handleAceptar(item.IdConexionMedicoPaciente)}>
+                  <FontAwesome name="check-circle" size={24} color="green" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleRechazar(item.IdConexionMedicoPaciente)} style={styles.rechazarIcon}>
+                  <FontAwesome name="times-circle" size={24} color="red" />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
     </View>
   );
 };
@@ -120,12 +140,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#d3d7d7',
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+  loadingText: {
     textAlign: 'center',
-    marginTop: 20,
-    color: 'black',
+    marginTop: 50,
+    fontSize: 18,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
+    color: 'gray',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#edf1f2',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: "center",
+    marginLeft: 115,
   },
   solicitudContainer: {
     backgroundColor: '#fff',
