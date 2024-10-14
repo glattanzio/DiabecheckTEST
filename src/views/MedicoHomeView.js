@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import { auth } from '../services/firebase';
+import { View, Text, Image, Grid,TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { auth, storage } from '../services/firebase';
+import { getDownloadURL, ref } from 'firebase/storage';
 import HeaderMedico from '../components/Header/HeaderMedico';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_IP } from '../services/apiService';
+import { UserProfileImage } from '../services/storage';
 
 const MedicoHomeView = ({ navigation }) => {
   const [medicoId, setMedicoId] = useState(null);
@@ -48,11 +50,8 @@ const MedicoHomeView = ({ navigation }) => {
         console.error('Error al obtener la lista de pacientes:', error);
       }
     };
-
     fetchPatients();
   }, [medicoId, searchQuery]);
-
-
   const calculateAge = (birthDate) => {
     const today = new Date();
     const birthDateObj = new Date(birthDate);
@@ -68,12 +67,13 @@ const MedicoHomeView = ({ navigation }) => {
 
   const renderPatient = ({ item }) => (
     <View style={styles.patientContainer}>
-      <View>
-        <Text style={styles.patientName}>{`${item.Apellido} ${item.Nombre}`}</Text>
-        <Text style={styles.patientInfo}>{`${calculateAge(item.FechaNacimiento)} AÑOS`}</Text>
-        <Text style={styles.patientInfo}>{item.coberturaMedica}</Text>
+      <UserProfileImage imagePath = {item.RutaFoto} />
+      <View style={styles.infoContainer}>
+          <Text style={styles.patientName}>{`${item.Apellido} ${item.Nombre}`}</Text>
+          <Text style={styles.patientInfo}>{`${calculateAge(item.FechaNacimiento)} AÑOS`}</Text>
+          <Text style={styles.patientInfo}>{item.coberturaMedica}</Text>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('Historia Medica', { patientId: item.IdUsuario })} style={styles.arrowContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('Historia Medica', { patientId: item.IdUsuario, userId: medicoId })} style={styles.arrowContainer}>
         <Text style={styles.arrow}>&gt;</Text>
       </TouchableOpacity>
     </View>
@@ -121,6 +121,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1,
   },
+  infoContainer: {
+      flex:1,
+    },
   patientName: {
     fontSize: 22,
     fontWeight: 'bold',
@@ -130,6 +133,12 @@ const styles = StyleSheet.create({
     color: '#666',
     fontWeight: 'bold',
   },
+  patientPhoto: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      marginRight: 15,
+    },
   arrowContainer: {
     justifyContent: 'center', 
   },

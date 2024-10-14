@@ -8,6 +8,7 @@ import { auth } from '../services/firebase';
 
 const VerMedicionesScreen = ({ route, navigation }) => {
   const { patientId } = route.params;
+  const { userId } = route.params;
   const [mediciones, setMediciones] = useState([]);
   const [userRole, setUserRole] = useState(null); 
   const [openMonth, setOpenMonth] = useState(false);
@@ -82,9 +83,10 @@ const VerMedicionesScreen = ({ route, navigation }) => {
     const fetchRole = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        const userId = auth.currentUser.uid;  // Obtener el Id del usuario autenticado
-  
-        const response = await fetch(`http://${API_IP}:8000/user-role/?user_id=${patientId}`, {
+        console.log('UserId', userId);
+        console.log('PacienteId', patientId);
+
+        const response = await fetch(`http://${API_IP}:8000/user-role/?user_id=${userId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -95,14 +97,9 @@ const VerMedicionesScreen = ({ route, navigation }) => {
           throw new Error('Error al obtener el rol del usuario');
         }
   
-        const data = await response.json();
-        setUserRole(data.Rol);
-        // Si es paciente, cargar sus propias mediciones
-        if (data.Rol === 'paciente') {
-          fetchMediciones(userId);  // Obtener mediciones del usuario actual
-        } else if (data.Rol === 'medico') {
-          fetchMediciones(patientId);  // Obtener mediciones del paciente
-        }
+        const dataRol = await response.json();
+        setUserRole(dataRol.Rol);
+        console.log('Role',userRole);
       } catch (error) {
         console.error('Error al obtener el rol del usuario:', error);
       }
@@ -175,11 +172,11 @@ const VerMedicionesScreen = ({ route, navigation }) => {
       />
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Ver Documentación', { patientId })}>
-          <Text style={styles.buttonText}>Ver Documentación</Text>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Mis Archivos', { patientId, userId })}>
+          <Text style={styles.buttonText}>Ver Archivos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cargar Documentación', { patientId })}>
-          <Text style={styles.buttonText}>Cargar Documentación</Text>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cargar Archivos', { patientId, userId })}>
+          <Text style={styles.buttonText}>Cargar Archivos</Text>
         </TouchableOpacity>
       </View>
     </View>

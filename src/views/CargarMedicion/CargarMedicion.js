@@ -46,13 +46,13 @@ const CargarMedicion = ({ navigation }) => {
     }
 
     try {
-      const pacienteId = await AsyncStorage.getItem('pacienteId');
+      const IdUsuario = await AsyncStorage.getItem('IdUsuario');
       const newMedicion = {
         Fecha: date.toISOString(),
         Glucosa: glucose ? parseFloat(glucose) : null,
         Insulina: insulin ? parseFloat(insulin) : null,
         Carbohidratos: carbs ? parseFloat(carbs) : null,
-        IdPaciente: parseInt(pacienteId, 10)
+        IdPaciente: parseInt(IdUsuario, 10)
       };
       await postData(newMedicion);
       Alert.alert('Éxito', "Medición guardada correctamente");

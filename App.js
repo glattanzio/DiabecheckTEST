@@ -13,6 +13,8 @@ import VerMedicionesScreen from './src/views/VerMedicionesScreen';
 import MisMedicos from './src/views/MisMedicos';
 import AgregarMedico from './src/views/AgregarMedico';
 import MisSolicitudes from './src/views/MisSolicitudes';
+import MisArchivos from './src/views/MisArchivos';
+import CargarArchivo from './src/views/CargarArchivo';
 
 
 const Stack = createStackNavigator();
@@ -49,6 +51,8 @@ const App = () => {
         <Stack.Screen name="Mis Medicos" component={MisMedicos} />
         <Stack.Screen name="Agregar Medico" component={AgregarMedico} />
         <Stack.Screen name="Mis Solicitudes" component={MisSolicitudes} />
+        <Stack.Screen name="Mis Archivos" component={MisArchivos} />
+        <Stack.Screen name="Cargar Archivo" component={CargarArchivo} />
 
       </Stack.Navigator>
     </NavigationContainer>

@@ -34,13 +34,13 @@ const SignInScreen = ({ navigation }) => {
 
       // Navegar a la pantalla adecuada basada en el rol del usuario
       if (role === 'Medico') {
-        const medicoId = data.IdUsuario; //paso el IdUsuario en vez del medicoId porque en la tabla de conexion en la db, usa el userid
-        await AsyncStorage.setItem('medicoId', medicoId.toString()); 
-        navigation.navigate('Medico Home View', { medicoId });
+        const IdUsuario = data.IdUsuario; //paso el IdUsuario en vez del medicoId porque en la tabla de conexion en la db, usa el userid
+        await AsyncStorage.setItem('IdUsuario', IdUsuario.toString());
+        navigation.navigate('Medico Home View', { IdUsuario });
       } else if (role === 'Paciente') {
-        const pacienteId = data.IdPaciente;
-        await AsyncStorage.setItem('pacienteId', pacienteId.toString());
-        navigation.navigate('Cargar Medicion', { pacienteId }); 
+        const IdUsuario = data.IdUsuario;
+        await AsyncStorage.setItem('IdUsuario', IdUsuario.toString());
+        navigation.navigate('Cargar Medicion', { IdUsuario });
       } else {
         console.error('Rol desconocido del usuario:', role);
       }

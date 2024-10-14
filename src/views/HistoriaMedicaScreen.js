@@ -6,6 +6,7 @@ import HeaderMedico from '../components/Header/HeaderMedico';
 
 const HistoriaMedicaScreen = ({ route, navigation }) => {
   const { patientId } = route.params;
+  const { userId } = route.params;
   const [patientData, setPatientData] = useState(null);
 
   useEffect(() => {
@@ -80,23 +81,23 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Ver Mediciones', { patientId: patientData.IdPacientesInfoAdicional })}
+            onPress={() => navigation.navigate('Ver Mediciones', { patientId: patientData.IdUsuario, userId: userId })}
           >
             <Text style={styles.buttonText}>Ver Mediciones</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Ver Documentación', { patientId: patientData.IdPacientesInfoAdicional })}
+            onPress={() => navigation.navigate('Mis Archivos', { patientId: patientData.IdUsuario, userId: userId })}
           >
-            <Text style={styles.buttonText}>Ver Documentación</Text>
+            <Text style={styles.buttonText}>Ver Archivos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Cargar Documentación', { patientId: patientData.IdPacientesInfoAdicional })}
+            onPress={() => navigation.navigate('Cargar Archivo', { patientId: patientData.IdUsuario, userId: userId })}
           >
-            <Text style={styles.buttonText}>Cargar Documentación</Text>
+            <Text style={styles.buttonText}>Cargar Archivo</Text>
           </TouchableOpacity>
         </View>
       </View>

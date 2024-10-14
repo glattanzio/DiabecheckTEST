@@ -4,6 +4,7 @@ import { auth } from '../services/firebase';
 import { Ionicons, FontAwesome } from '@expo/vector-icons'; // Asegúrate de tener estas librerías instaladas
 import { API_IP } from '../services/apiService';
 import HeaderPaciente from '../components/Header/HeaderPaciente';
+import { UserProfileImage } from '../services/storage';
 
 const MisMedicos = ({ route, navigation }) => {
   const { patientId } = route.params;
@@ -39,7 +40,7 @@ const MisMedicos = ({ route, navigation }) => {
 
   const renderMedico = ({ item }) => (
     <View style={styles.medicoContainer}>
-      <FontAwesome name="user-circle-o" size={40} color="gray" style={styles.medicoIcon} />
+      <UserProfileImage imagePath = {item.RutaFoto} />
       <Text style={styles.medicoName}>{`${item.Apellido} ${item.Nombre}`}</Text>
       <TouchableOpacity onPress={() => eliminarMedico(item.IdUsuario)}>
         <Ionicons name="trash" size={24} color="black" style={styles.deleteIcon} />
