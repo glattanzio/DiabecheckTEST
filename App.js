@@ -51,7 +51,7 @@ const App = () => {
         <Stack.Screen name="Mis Medicos" component={MisMedicos} />
         <Stack.Screen name="Agregar Medico" component={AgregarMedico} />
         <Stack.Screen name="Mis Solicitudes" component={MisSolicitudes} />
-        <Stack.Screen name="Mis Archivos" component={MisArchivos} />
+        <Stack.Screen name="Ver Archivos" component={MisArchivos} />
         <Stack.Screen name="Cargar Archivo" component={CargarArchivo} />
 
       </Stack.Navigator>

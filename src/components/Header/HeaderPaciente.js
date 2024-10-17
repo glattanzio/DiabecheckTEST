@@ -70,7 +70,7 @@ const HeaderPaciente = ({ navigation }) => {
     const handleArchivos = () => {
             try {
                 setModalVisible(false);
-                navigation.navigate('Mis Archivos', { patientId: IdUsuario, userId: IdUsuario});
+                navigation.navigate('Ver Archivos', { patientId: IdUsuario, userId: IdUsuario});
             } catch (error) {
                 console.error('Error al ver Archivos', error);
             }

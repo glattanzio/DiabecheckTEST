@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { storage } from './firebase'; // Adjust the import based on your file structure
+import { storage } from './firebase';
 import { styles } from './styles';
 import { ref, uploadBytes, getDownloadURL} from 'firebase/storage';
 import { View, Text, Image, StyleSheet} from 'react-native';

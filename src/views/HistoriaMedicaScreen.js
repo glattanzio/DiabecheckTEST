@@ -88,7 +88,7 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Mis Archivos', { patientId: patientData.IdUsuario, userId: userId })}
+            onPress={() => navigation.navigate('Ver Archivos', { patientId: patientData.IdUsuario, userId: userId })}
           >
             <Text style={styles.buttonText}>Ver Archivos</Text>
           </TouchableOpacity>
