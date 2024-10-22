@@ -11,6 +11,7 @@ import { API_IP } from '../services/apiService';
 import * as DocumentPicker from 'expo-document-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { auth } from '../services/firebase';
+import { FilesPath } from '../services/storage';
 
 
 
@@ -26,6 +27,7 @@ const CargarArchivo = ({ route, navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [open, setOpen] = useState(false);
   const [userRole, setUserRole] = useState(null); 
+  const [fileName, setfileName] = useState(null);
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fecha;
@@ -45,7 +47,7 @@ const CargarArchivo = ({ route, navigation }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All, 
         allowsEditing: false, 
-        quality: 1, 
+        quality: 0,
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -81,7 +83,7 @@ const seleccionarArchivo = async () => {
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0,
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -99,18 +101,21 @@ const seleccionarArchivo = async () => {
     try {
       // Subir el archivo a Firebase
       const response = await fetch(archivo);
+      console.log('response', response);
       const blob = await response.blob();
-  
-      const archivoRef = ref(storage, `documentos/${patientId}/${new Date().toISOString()}`);
-      await uploadBytes(archivoRef, blob);
+      console.log('blob', blob);
+      const archivoRef = ref(storage, `${FilesPath}${patientId}/${new Date().toISOString()}`);
+      console.log('archivoRef', archivoRef);
+      await uploadBytes(archivoRef, blob); //pincha aca
       const downloadURL = await getDownloadURL(archivoRef);
+      console.log('downloadURL', downloadURL);
       setUrlArchivo(downloadURL);
       alert('Archivo subido con éxito');
-  
+      console.log('nombre',fileName);
       // Preparar los datos para enviar al backend
       const archivoData = {
         id_paciente: patientId,
-        nombre: "test",
+        nombre: fileName,
         ruta_archivo: downloadURL,  // URL del archivo en Firebase
         fecha_publicacion: new Date().toISOString(),  // Fecha actual
         id_usuario: userId,  // El ID del usuario que carga el archivo (autenticado)
@@ -217,7 +222,15 @@ const seleccionarArchivo = async () => {
             onChange={handleDateChange}
           />
         )}
-
+      {/* Nombre de documento  */}
+      <Text style={styles.label}>Nombre</Text>
+      <TextInput
+              style={styles.input}
+              placeholder="Nombre del archivo"
+              placeholderTextColor="#999"
+              value={fileName}
+              onChangeText={(text) => setfileName(text)}
+            />
       {/* Tipo de documento - Dropdown */}
       <Text style={styles.label}>Tipo</Text>
       <DropDownPicker

@@ -1,5 +1,5 @@
   import React, { useState, useEffect } from 'react';
-  import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+  import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
   import { auth } from '../services/firebase';
   import { Ionicons, FontAwesome } from '@expo/vector-icons'; // Asegúrate de tener estas librerías instaladas
   import { API_IP } from '../services/apiService';
@@ -70,6 +70,24 @@ const MisArchivos = ({ route, navigation }) => {
     fetchRole();
   }, []);
 
+  // Función para manejar el rechazo de la solicitud
+    const handleEliminar = (idArchivo) => {
+      fetch(`http://${API_IP}:8000/archivos/borrar/${idArchivo}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idArchivo }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        Alert.alert('Éxito', 'Archivo eliminado');
+        console.log('id',idArchivo);
+        // Actualizar la lista de solicitudes
+        setArchivos(archivos.filter(archivo => archivo.IdArchivo !== idArchivo));
+      })
+      .catch(error => console.error('Error eliminando archivo:', error));
+    };
 
   const renderArchivos = ({ item }) => (
     <View style={styles.archivoContainer}>
@@ -81,17 +99,12 @@ const MisArchivos = ({ route, navigation }) => {
       <TouchableOpacity onPress={() => descargarArchivo(item.IdArchivo)}>
         <Ionicons name="download" size={24} color="black" style={styles.downloadIcon} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => eliminarArchivo(item.IdArchivo)}>
+      <TouchableOpacity onPress={() => handleEliminar(item.IdArchivo)}>
         <Ionicons name="trash" size={24} color="black" style={styles.deleteIcon} />
       </TouchableOpacity>
     </View>
   );
 
-  const eliminarArchivo = (idArchivo) => {
-    // Lógica para eliminar el archivo aquí
-    console.log('Eliminar archivo con id: ', idArchivo);
-
-  };
   const descargarArchivo = (idArchivo) => {
     // Lógica para descargar el archivo aquí
     console.log('Descargar archivo con id: ', idArchivo);
@@ -106,7 +119,7 @@ const MisArchivos = ({ route, navigation }) => {
             )}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>ARCHIVOS</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Cargar Archivo', { patientId })}>
+          <TouchableOpacity onPress={() => navigation.navigate('Cargar Archivo', { patientId, userId  })}>
             <Ionicons name="add-circle-outline" size={30} color="black" style={styles.addButton} />
           </TouchableOpacity>
         </View>

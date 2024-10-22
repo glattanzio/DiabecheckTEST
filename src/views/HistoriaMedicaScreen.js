@@ -73,6 +73,7 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
             <Text style={styles.infoText}>Cobertura: {patientData.coberturaMedica}</Text>
             <Text style={styles.infoText}>Altura: {patientData.Altura} cm</Text>
             <Text style={styles.infoText}>Peso: {patientData.Peso} kg</Text>
+            <Text style={styles.infoText}>Ultima Consulta: {patientData.FechaUltimaConsulta}</Text>
           </View>
 
           <TouchableOpacity style={styles.editButton} onPress={() => {/* Acción para editar la historia médica */}}>

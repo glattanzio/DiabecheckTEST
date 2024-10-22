@@ -5,6 +5,7 @@ import { ref, uploadBytes, getDownloadURL} from 'firebase/storage';
 import { View, Text, Image, StyleSheet} from 'react-native';
 
 export const PicsPath = 'ProfilePics/'
+export const FilesPath = 'documentos/'
 
 const FileUpload = () => {
   const [file, setFile] = useState(null);
