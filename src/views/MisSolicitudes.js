@@ -39,6 +39,7 @@ const MisSolicitudes = ({ route, navigation }) => {
     fetchSolicitudes();
   }, [medicoId]);
 
+
   // Función para manejar la aceptación de la solicitud
   const handleAceptar = (idSolicitud) => {
     fetch(`http://${API_IP}:8000/medico/solicitudes/aceptar/${idSolicitud}/`, {
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: "center",
-    marginLeft: 115,
+    marginLeft: 150,
   },
   solicitudContainer: {
     backgroundColor: '#fff',

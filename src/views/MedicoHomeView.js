@@ -15,7 +15,7 @@ const MedicoHomeView = ({ navigation }) => {
   useEffect(() => {
     const fetchMedicoId = async () => {
       try {
-        const storedMedicoId = await AsyncStorage.getItem('medicoId');
+        const storedMedicoId = await AsyncStorage.getItem('IdUsuario');
         if (storedMedicoId) {
           setMedicoId(parseInt(storedMedicoId));
         }

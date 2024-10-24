@@ -1,5 +1,5 @@
 //export const API_IP = '10.0.2.16'; // Para emulador de Android
-export const API_IP = '192.168.100.13'; // Para emulador de Android
+export const API_IP = '192.168.0.3'; // Para emulador de Android
 
 
 export const getData = async () => {

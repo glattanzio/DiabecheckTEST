@@ -94,7 +94,7 @@ const MisArchivos = ({ route, navigation }) => {
         <View style ={styles.infoContainer}>
           <Text style={styles.archivoInfo}>{`${item.Nombre}`}</Text>
           <Text style={styles.archivoInfo}>{`${item.NombreCreador} ${item.ApellidoCreador}`}</Text>
-          <Text style={styles.archivoInfo}>{`${item.FechaPublicacion}`}</Text>
+          <Text style={styles.archivoInfo}>{`${formatDate(item.FechaPublicacion)}`}</Text>
         </View>
       <TouchableOpacity onPress={() => descargarArchivo(item.IdArchivo)}>
         <Ionicons name="download" size={24} color="black" style={styles.downloadIcon} />
@@ -104,6 +104,16 @@ const MisArchivos = ({ route, navigation }) => {
       </TouchableOpacity>
     </View>
   );
+
+  function formatDate(datetime) {
+    const date = new Date(datetime);  // Convierte el string datetime a un objeto Date
+
+    const day = String(date.getDate()).padStart(2, '0');    // Obtener el día (2 dígitos)
+    const month = String(date.getMonth() + 1).padStart(2, '0');  // Obtener el mes (2 dígitos) +1 porque los meses son 0-indexados
+    const year = date.getFullYear();   // Obtener el año completo
+
+    return `${day}/${month}/${year}`;  // Formatear como dd/mm/yyyy
+  }
 
   const descargarArchivo = (idArchivo) => {
     // Lógica para descargar el archivo aquí

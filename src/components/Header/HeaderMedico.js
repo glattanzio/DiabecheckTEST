@@ -19,7 +19,7 @@ const HeaderMedico = ({ navigation }) => {
             if (user) {
                 try {
                     // Obtener el medicoId desde AsyncStorage
-                    const storedMedicoId = await AsyncStorage.getItem('medicoId');
+                    const storedMedicoId = await AsyncStorage.getItem('IdUsuario');
                     setMedicoId(storedMedicoId);
                 } catch (error) {
                     console.error('Error al obtener el medicoId:', error);
