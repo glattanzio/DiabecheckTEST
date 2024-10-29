@@ -49,8 +49,7 @@ const MisMedicos = ({ route, navigation }) => {
   );
 
   const eliminarMedico = (idMedico) => {
-    // Lógica para eliminar el médico aquí
-    console.log(`Eliminar médico con id: ${idMedico}`);
+    //logica para eliminar conexion medico paciente
   };
 
   return (
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: "center",
-    marginLeft: 115,
+    marginLeft: 150,
   },
   addButton: {
     marginRight: 10,

@@ -172,10 +172,10 @@ const VerMedicionesScreen = ({ route, navigation }) => {
       />
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Mis Archivos', { patientId, userId })}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Ver Archivos', { patientId, userId })}>
           <Text style={styles.buttonText}>Ver Archivos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cargar Archivos', { patientId, userId })}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cargar Archivo', { patientId, userId })}>
           <Text style={styles.buttonText}>Cargar Archivos</Text>
         </TouchableOpacity>
       </View>
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
       fontSize: 20,
       fontWeight: 'bold',
       textAlign: "center",
-      marginLeft: 115,
+      marginLeft: 155,
     },
     titleMedicion: {
         fontSize: 12,

@@ -37,6 +37,7 @@ const AgregarMedico = ({ route, navigation }) => {
     }
   };
 
+
   const enviarSolicitud = async () => {
     try {
       if (!medico) {
@@ -62,6 +63,9 @@ const AgregarMedico = ({ route, navigation }) => {
       const data = await response.json();
       setMensaje('Solicitud enviada con éxito');
       Alert.alert('Éxito', 'Solicitud enviada con éxito');
+      setMatricula('');
+      setMedico(null);
+      setMensaje('');
     } catch (error) {
       console.error(error);
       setMensaje('Error al enviar la solicitud');

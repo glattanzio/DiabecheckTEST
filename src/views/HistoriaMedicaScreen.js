@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: "center",
-    marginLeft: 95,
+    marginLeft: 130,
   },
   patientName: {
     fontSize: 26,
