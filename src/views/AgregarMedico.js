@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ActivityIndicator, SafeAreaView, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { API_IP } from '../services/apiService';
+import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import HeaderPaciente from '../components/Header/HeaderPaciente';
+
 
 const AgregarMedico = ({ route, navigation }) => {
   const { patientId } = route.params;
@@ -10,6 +13,15 @@ const AgregarMedico = ({ route, navigation }) => {
   const [medico, setMedico] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const showPopup = () => {
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalVisible(false);
+    }, 2000); // Ocultar automáticamente después de 2 segundos
+  };
+
 
   const buscarMedico = async () => {
     try {
@@ -37,7 +49,6 @@ const AgregarMedico = ({ route, navigation }) => {
     }
   };
 
-
   const enviarSolicitud = async () => {
     try {
       if (!medico) {
@@ -62,7 +73,8 @@ const AgregarMedico = ({ route, navigation }) => {
 
       const data = await response.json();
       setMensaje('Solicitud enviada con éxito');
-      Alert.alert('Éxito', 'Solicitud enviada con éxito');
+      showPopup();
+      //Alert.alert('Éxito', 'Solicitud enviada con éxito');
       setMatricula('');
       setMedico(null);
       setMensaje('');
@@ -74,127 +86,198 @@ const AgregarMedico = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <HeaderPaciente navigation={navigation} />
-      <Text style={styles.title}>NUEVO MEDICO</Text>
-
-      <View style={styles.searchContainer}>
-        <FontAwesome name="search" size={20} color="gray" style={styles.searchIcon} />
-        <TextInput
-          style={styles.input}
-          placeholder="Introducir Matrícula"
-          placeholderTextColor="gray"
-          value={matricula}
-          onChangeText={setMatricula}
-        />
-        <TouchableOpacity style={styles.searchButton} onPress={buscarMedico}>
-          <Text style={styles.searchButtonText}>Buscar</Text>
-        </TouchableOpacity>
-      </View>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#4CAF50" />
-      ) : medico ? (
-        <View style={styles.medicoInfoContainer}>
-          <FontAwesome name="user-circle-o" size={40} color="gray" />
-          <Text style={styles.medicoName}>{`${medico.Nombre} ${medico.Apellido}`}</Text>
+      
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>Nuevo Médico</Text>
+        
+        <View style={styles.searchContainer}>
+          <Ionicons name="search" size={24} color="#428f7a" style={styles.searchIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Ingresar Matrícula Médica"
+            placeholderTextColor="#8e8e8e"
+            value={matricula}
+            onChangeText={setMatricula}
+            keyboardType="numeric"
+          />
+          <TouchableOpacity style={styles.searchButton} onPress={buscarMedico}>
+            <Text style={styles.searchButtonText}>Buscar</Text>
+          </TouchableOpacity>
         </View>
-      ) : mensaje ? (
-        <Text style={styles.errorText}>{mensaje}</Text>
-      ) : null}
 
-      <TouchableOpacity style={styles.modernButton} onPress={enviarSolicitud}>
-        <Text style={styles.modernButtonText}>Enviar Solicitud</Text>
-      </TouchableOpacity>
+        {loading ? (
+          <ActivityIndicator size="large" color="#3498db" style={styles.loadingIndicator} />
+        ) : medico ? (
+          <View style={styles.medicoInfoContainer}>
+            <View style={styles.medicoAvatarContainer}>
+              <Ionicons name="person-circle-outline" size={60} color="#428f7a" />
+            </View>
+            <View style={styles.medicoDetailsContainer}>
+              <Text style={styles.medicoName}>{`Dr. ${medico.Nombre} ${medico.Apellido}`}</Text>
+              <Text style={styles.medicoMatricula}>Matrícula: {matricula}</Text>
+            </View>
+          </View>
+        ) : mensaje ? (
+          <Text style={styles.errorText}>{mensaje}</Text>
+        ) : null}
 
-      {mensaje ? <Text style={styles.mensaje}>{mensaje}</Text> : null}
-    </View>
+        <TouchableOpacity 
+          style={[
+            styles.modernButton, 
+            (!medico || loading) && styles.modernButtonDisabled
+          ]}
+          onPress={enviarSolicitud}
+          disabled={!medico || loading}
+        >
+          <Text style={styles.modernButtonText}>Enviar Solicitud</Text>
+        </TouchableOpacity>
+
+        {mensaje && <Text style={styles.mensajeText}>{mensaje}</Text>}
+      </View>
+      <Modal
+        isVisible={isModalVisible}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        backdropOpacity={0.5}
+        onBackdropPress={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContent}>
+          <Icon name="check-circle" size={60} color="#428f7a" />
+          <Text style={styles.modalText}>Solicitud enviada correctamente</Text>
+        </View>
+      </Modal>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#d3d7d7',
+    backgroundColor: '#f4f6f7',
+  },
+  contentContainer: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '700',
     textAlign: 'center',
-    marginTop: 20,
-    color: 'black',
+    color: '#2c3e50',
+    marginBottom: 30,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#a8b2af',
-    paddingHorizontal: 10,
-    borderRadius: 25,
-    marginTop: 40,
-    marginHorizontal: 20,
+    backgroundColor: '#ffffff',
+    borderRadius: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    marginBottom: 20,
   },
   searchIcon: {
-    marginRight: 10,
+    paddingLeft: 15,
   },
   input: {
     flex: 1,
-    paddingVertical: 10,
-    color: 'black',
-    fontWeight: 'bold',
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    color: '#2c3e50',
   },
   searchButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
+    backgroundColor: '#428f7a',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderTopRightRadius: 15,
+    borderBottomRightRadius: 15,
   },
   searchButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: '#ffffff',
+    fontWeight: '600',
   },
   medicoInfoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 20,
-    marginVertical: 20,
-    marginHorizontal: 20,
-    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 20,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  medicoAvatarContainer: {
+    marginRight: 15,
+  },
+  medicoDetailsContainer: {
+    flex: 1,
   },
   medicoName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 10,
+    fontWeight: '700',
+    color: '#2c3e50',
+    marginBottom: 5,
   },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 10,
+  medicoMatricula: {
+    fontSize: 14,
+    color: '#7f8c8d',
   },
   modernButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#428f7a',
     paddingVertical: 15,
-    borderRadius: 30,
-    marginHorizontal: 20,
+    borderRadius: 15,
     alignItems: 'center',
-    marginTop: 20,
+    marginBottom: 20,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  modernButtonDisabled: {
+    backgroundColor: '#bdc3c7',
   },
   modernButtonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
-  mensaje: {
+  errorText: {
+    color: '#e74c3c',
     textAlign: 'center',
-    marginTop: 20,
+    marginBottom: 20,
     fontSize: 16,
+  },
+  mensajeText: {
+    color: '#2ecc71',
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 16,
+  },
+  loadingIndicator: {
+    marginVertical: 20,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#428f7a',
   },
 });
 

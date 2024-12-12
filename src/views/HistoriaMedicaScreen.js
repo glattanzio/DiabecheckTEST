@@ -91,14 +91,14 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
             style={styles.button}
             onPress={() => navigation.navigate('Ver Archivos', { patientId: patientData.IdUsuario, userId: userId })}
           >
-            <Text style={styles.buttonText}>Ver Archivos</Text>
+            <Text style={styles.buttonText}>Ver Documentacion</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.button}
             onPress={() => navigation.navigate('Cargar Archivo', { patientId: patientData.IdUsuario, userId: userId })}
           >
-            <Text style={styles.buttonText}>Cargar Archivo</Text>
+            <Text style={styles.buttonText}>Cargar Documentacion</Text>
           </TouchableOpacity>
         </View>
       </View>

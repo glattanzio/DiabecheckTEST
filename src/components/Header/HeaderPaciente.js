@@ -104,7 +104,7 @@ const HeaderPaciente = ({ navigation }) => {
                             <Text style={styles.modalButtonText}>Mis Medicos</Text>
                         </Pressable>
                         <Pressable style={styles.modalButton} onPress={handleArchivos}>
-                            <Text style={styles.modalButtonText}>Mis Archivos</Text>
+                            <Text style={styles.modalButtonText}>Mi Documentacion</Text>
                         </Pressable>
                         <Pressable style={styles.modalButton} onPress={handleSignOut}>
                             <Text style={styles.modalButtonText}>Cerrar Sesión</Text>

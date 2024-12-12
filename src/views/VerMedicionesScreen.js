@@ -107,27 +107,58 @@ const VerMedicionesScreen = ({ route, navigation }) => {
   
     fetchRole();
   }, []);
-  
 
-  const renderMedicion = ({ item }) => (
-    <View style={styles.medicionContainer}>
-      <Text style={styles.fechaHora}>
-        {`${formatDateTime(item.Fecha)}`}
-      </Text>
+  const getGlucoseStatus = (glucosa) => {
+    if (glucosa > 150) {
+      return {
+        status: '⛔️',
+        color: '#FF0000'
+      }; // Bad
+    } else if (glucosa >= 120 && glucosa <= 150) {
+      return {
+        status: '✅',
+        color: '#00FF00'
+      }; // Good
+    } else if (glucosa >= 100 && glucosa < 120) {
+      return {
+        status: '⚠️',
+        color: '#FFFF00'
+      }; // Regular
+    } else {
+      return {
+        status: '⛔️',
+        color: '#FF0000'
+      }; // Bad
+    }
+  };
   
-      <View style={styles.row}>
-        <Text style={styles.titleMedicion}>GLUCEMIA</Text>
-        <Text style={styles.titleMedicion}>INSULINA</Text>
-        <Text style={styles.titleMedicion}>CARBOHIDRATOS</Text>
-      </View>
+  const renderMedicion = ({ item }) => {
+    const glucoseStatus = getGlucoseStatus(item.Glucosa);
   
-      <View style={styles.row}>
-        <Text style={styles.value}>{item.Glucosa} mg/dl</Text>
-        <Text style={styles.value}>{item.Insulina} u</Text>
-        <Text style={styles.value}>{item.Carbohidratos} g</Text>
+    return (
+      <View style={styles.medicionContainer}>
+        <View style={styles.statusSymbolContainer}>
+          <Text style={styles.statusSymbol}>{glucoseStatus.status}</Text>
+        </View>
+  
+        <Text style={styles.fechaHora}>
+          {`${formatDateTime(item.Fecha)}`}
+        </Text>
+  
+        <View style={styles.row}>
+          <Text style={styles.titleMedicion}>GLUCEMIA</Text>
+          <Text style={styles.titleMedicion}>INSULINA</Text>
+          <Text style={styles.titleMedicion}>CARBOHIDRATOS</Text>
+        </View>
+  
+        <View style={styles.row}>
+          <Text style={styles.value}>{item.Glucosa} mg/dl</Text>
+          <Text style={styles.value}>{item.Insulina} u</Text>
+          <Text style={styles.value}>{item.Carbohidratos} g</Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -173,10 +204,10 @@ const VerMedicionesScreen = ({ route, navigation }) => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Ver Archivos', { patientId, userId })}>
-          <Text style={styles.buttonText}>Ver Archivos</Text>
+          <Text style={styles.buttonText}>Ver Documentacion</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cargar Archivo', { patientId, userId })}>
-          <Text style={styles.buttonText}>Cargar Archivos</Text>
+          <Text style={styles.buttonText}>Cargar Documentacion</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -279,7 +310,26 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontWeight: 'bold',
     },
-    
+    statusSymbolContainer: {
+      position: 'absolute',
+      top: 10,
+      right: 10,
+      zIndex: 1,
+    },
+    statusSymbol: {
+      fontSize: 18,
+    },
+    medicionContainer: {
+      backgroundColor: '#e0e0e0',
+      padding: 10,
+      marginVertical: 5,
+      marginHorizontal: 10,
+      borderRadius: 10,
+      zIndex: -1,
+      borderColor: '#000',
+      borderWidth: 2,
+      position: 'relative',
+    },
   });
   
 

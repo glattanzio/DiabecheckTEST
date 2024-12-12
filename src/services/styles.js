@@ -83,4 +83,20 @@ export const styles = StyleSheet.create({
   downloadIcon: {
     marginLeft: 20,
   },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#428f7a',
+  },
+  sortButton: {    
+    marginLeft: 220,
+  },
 });

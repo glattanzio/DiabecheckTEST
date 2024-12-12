@@ -5,14 +5,27 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { postData } from '../../services/apiService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from 'react';
+import { API_IP } from '../../services/apiService';
+import Modal from 'react-native-modal';
+//import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const CargarMedicion = ({ navigation }) => {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [glucose, setGlucose] = useState('');
   const [insulin, setInsulin] = useState('');
   const [carbs, setCarbs] = useState('');
+  const [isModalVisible, setModalVisible] = useState(false);
+
+
+  const showPopup = () => {
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalVisible(false);
+    }, 2000); // Ocultar automáticamente después de 2 segundos
+  };
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -55,7 +68,8 @@ const CargarMedicion = ({ navigation }) => {
         IdPaciente: parseInt(IdUsuario, 10)
       };
       await postData(newMedicion);
-      Alert.alert('Éxito', "Medición guardada correctamente");
+      showPopup();
+      //Alert.alert('Éxito', "Medición guardada correctamente");
       setGlucose('');
       setInsulin('');
       setCarbs('');
@@ -66,6 +80,21 @@ const CargarMedicion = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchServerTime = async () => {
+      try {
+        const response = await fetch(`http://${API_IP}:8000/api/time`);
+        const data = await response.json();
+        setDate(new Date(data.serverTime));
+      } catch (error) {
+        console.error('Error al obtener la hora del servidor:', error);
+      }
+    };
+  
+    fetchServerTime();
+  }, []);
+  
+
   return (
     <View style={styles.container}>
       <HeaderPaciente navigation={navigation} />
@@ -74,39 +103,45 @@ const CargarMedicion = ({ navigation }) => {
           <Text style={styles.headerTitle}>CARGAR MEDICIÓN</Text>
         </View>
         <View style={styles.container2}>
-          <View style={styles.row}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>FECHA</Text>
-              <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
-                <Text>{formatDate(date)}</Text>
-                <Icon name="calendar" size={20} color="#000" />
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="default"
-                  onChange={handleDateChange}
-                />
-              )}
-            </View>
+          {date ? (
+            <>
+              <View style={styles.row}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>FECHA</Text>
+                  <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
+                    <Text>{formatDate(date)}</Text>
+                    <Icon name="calendar" size={20} color="#000" />
+                  </TouchableOpacity>
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={date}
+                      mode="date"
+                      display="default"
+                      onChange={handleDateChange}
+                    />
+                  )}
+                </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>HORA</Text>
-              <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.dateInput}>
-                <Text>{formatTime(date)}</Text>
-                <Icon name="clock-o" size={20} color="#000" />
-              </TouchableOpacity>
-              {showTimePicker && (
-                <DateTimePicker
-                  value={date}
-                  mode="time"
-                  display="default"
-                  onChange={handleTimeChange}
-                />
-              )}
-            </View>
-          </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>HORA</Text>
+                  <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.dateInput}>
+                    <Text>{formatTime(date)}</Text>
+                    <Icon name="clock-o" size={20} color="#000" />
+                  </TouchableOpacity>
+                  {showTimePicker && (
+                    <DateTimePicker
+                      value={date}
+                      mode="time"
+                      display="default"
+                      onChange={handleTimeChange}
+                    />
+                  )}
+                </View>
+              </View>
+            </>
+          ) : (
+            <Text style={styles.loadingText}>Cargando hora del servidor...</Text>
+          )}
 
           <Text style={styles.label}>MEDICIÓN DE GLUCEMIA</Text>
           <TextInput
@@ -115,7 +150,7 @@ const CargarMedicion = ({ navigation }) => {
             onChangeText={setGlucose}
             placeholder="mg/dl"
             keyboardType="numeric"
-            placeholderTextColor="#000" 
+            placeholderTextColor="#000"
           />
 
           <Text style={styles.label}>UNIDADES DE INSULINA</Text>
@@ -125,7 +160,7 @@ const CargarMedicion = ({ navigation }) => {
             onChangeText={setInsulin}
             placeholder="unidades"
             keyboardType="numeric"
-            placeholderTextColor="#000" 
+            placeholderTextColor="#000"
           />
 
           <Text style={styles.label}>CANTIDAD DE CARBOHIDRATOS</Text>
@@ -135,12 +170,24 @@ const CargarMedicion = ({ navigation }) => {
             onChangeText={setCarbs}
             placeholder="gramos"
             keyboardType="numeric"
-            placeholderTextColor="#000" 
+            placeholderTextColor="#000"
           />
 
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>GUARDAR</Text>
           </TouchableOpacity>
+          <Modal
+            isVisible={isModalVisible}
+            animationIn="zoomIn"
+            animationOut="zoomOut"
+            backdropOpacity={0.5}
+            onBackdropPress={() => setModalVisible(false)}
+          >
+            <View style={styles.modalContent}>
+              <Icon name="check-circle" size={60} color="#428f7a" />
+              <Text style={styles.modalText}>Medicion guardada correctamente</Text>
+            </View>
+          </Modal>
         </View>
       </ScrollView>
     </View>
@@ -233,7 +280,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  }
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#428f7a',
+  },
 });
 
 export default CargarMedicion;

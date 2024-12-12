@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, Platform, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Platform, Image, StyleSheet, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as ImagePicker from 'expo-image-picker'; // Para seleccionar imágenes desde el dispositivo o tomar fotos
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -12,7 +12,9 @@ import * as DocumentPicker from 'expo-document-picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { auth } from '../services/firebase';
 import { FilesPath } from '../services/storage';
-
+import * as FileSystem from 'expo-file-system';
+import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 
@@ -28,6 +30,8 @@ const CargarArchivo = ({ route, navigation }) => {
   const [open, setOpen] = useState(false);
   const [userRole, setUserRole] = useState(null); 
   const [fileName, setfileName] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
+
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || fecha;
@@ -35,61 +39,102 @@ const CargarArchivo = ({ route, navigation }) => {
     setFecha(currentDate);
   };
 
-  const seleccionarImagen = async () => {
-    // Solicitar permisos para acceder a la galería
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-        alert('Se requiere permiso para acceder a la galería!');
-        return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All, 
-        allowsEditing: false, 
-        quality: 0,
-    });
-
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedUri = result.assets[0].uri; 
-        setArchivo(selectedUri);
-    }
-};
-
-const seleccionarArchivo = async () => {
-  try {
+  const seleccionarArchivo = async () => {
+    try {
       const result = await DocumentPicker.getDocumentAsync({
-          type: ['image/*', 'application/pdf'], 
-          copyToCacheDirectory: false,
+        type: ['image/jpeg', 'image/png', 'application/pdf'], // Solo permitir estos tipos de archivo
+        copyToCacheDirectory: true, // Asegura que el archivo esté accesible en el sistema
       });
+  
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedUri = result.assets[0].uri;  
-        setArchivo(selectedUri); 
+      if (!result.canceled) {
+        const { uri, mimeType } = result.assets[0];
+  
+        // Validar el tipo MIME
+        if (!['image/jpeg', 'image/png', 'application/pdf'].includes(mimeType)) {
+          Alert.alert('Archivo no permitido', 'Solo se pueden subir archivos PDF, JPG o PNG.');
+          return;
+        }
+
+        // Validar el tamaño del archivo
+        if (result.assets[0].size > 25 * 1024 * 1024) { // 25 MB en bytes
+          Alert.alert('Archivo demasiado grande', 'El archivo no puede superar los 25 MB.');
+          return;
+        }
+  
+        // Validar el formato del URI
+        if (!uri.startsWith('file://') && !uri.startsWith('content://')) {
+          Alert.alert('Error en el archivo', 'No se pudo procesar el archivo seleccionado.');
+          return;
+        }
+  
+        setArchivo(uri);
       }
-  } catch (error) {
+    } catch (error) {
       console.error('Error al seleccionar el archivo:', error);
       Alert.alert('Error al seleccionar el archivo');
     }
-};
-
+  };
+  
+  
+  const seleccionarImagen = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
+    if (permissionResult.granted === false) {
+      alert('Se requiere permiso para acceder a la galería!');
+      return;
+    }
+  
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, // Limitar a imágenes
+      allowsEditing: false,
+      quality: 0,
+    });
+  
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedAsset = result.assets[0];
+  
+      // Validar extensión de archivo
+      if (!selectedAsset.uri.match(/\.(jpg|jpeg|png)$/)) {
+        Alert.alert('Archivo no permitido', 'Solo se pueden subir imágenes JPG o PNG.');
+        return;
+      }
+  
+      setArchivo(selectedAsset.uri);
+    }
+  };
+  
   const tomarFoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
       alert('Permiso para acceder a la cámara es necesario');
       return;
     }
-
+  
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0,
     });
-
+  
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      const selectedUri = result.assets[0].uri; 
-      setArchivo(selectedUri);
+      const selectedAsset = result.assets[0];
+  
+      // Validar extensión de archivo
+      if (!selectedAsset.uri.match(/\.(jpg|jpeg|png)$/)) {
+        Alert.alert('Archivo no permitido', 'Solo se pueden subir imágenes JPG o PNG.');
+        return;
+      }
+  
+      setArchivo(selectedAsset.uri);
     }
+  };  
+
+  const showPopup = () => {
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalVisible(false);
+    }, 2000); // Ocultar automáticamente después de 2 segundos
   };
 
   const handleUpload = async () => {
@@ -99,19 +144,26 @@ const seleccionarArchivo = async () => {
     }
   
     try {
+      // Leer el archivo como blob usando FileSystem
+      const fileInfo = await FileSystem.getInfoAsync(archivo);
+
+      if (!fileInfo.exists) {
+        alert('El archivo seleccionado no existe.');
+        return;
+      }
       // Subir el archivo a Firebase
       const response = await fetch(archivo);
-      console.log('response', response);
+      //console.log('response', response);
       const blob = await response.blob();
-      console.log('blob', blob);
+      //console.log('blob', blob);
       const archivoRef = ref(storage, `${FilesPath}${patientId}/${new Date().toISOString()}`);
-      console.log('archivoRef', archivoRef);
+      //console.log('archivoRef', archivoRef);
       await uploadBytes(archivoRef, blob); //pincha aca
       const downloadURL = await getDownloadURL(archivoRef);
-      console.log('downloadURL', downloadURL);
+      //console.log('downloadURL', downloadURL);
       setUrlArchivo(downloadURL);
-      alert('Archivo subido con éxito');
-      console.log('nombre',fileName);
+      //console.log('nombre',fileName);
+     
       // Preparar los datos para enviar al backend
       const archivoData = {
         id_paciente: patientId,
@@ -134,7 +186,8 @@ const seleccionarArchivo = async () => {
   
       if (responseBackend.ok) {
         const jsonResponse = await responseBackend.json();
-        console.log('Archivo registrado en la base de datos:', jsonResponse);
+        ('Archivo registrado en la base de datos:', jsonResponse);
+        showPopup();
       } else {
         alert('Error al registrar el archivo en la base de datos');
       }
@@ -142,6 +195,7 @@ const seleccionarArchivo = async () => {
       // Limpiar el formulario después de la subida
       setArchivo(null);
       setTipo('');
+      setfileName('');
       setFecha(new Date());
     } catch (error) {
       console.log('Error en la subida:', error);
@@ -167,7 +221,6 @@ const seleccionarArchivo = async () => {
   
         const dataRol = await response.json();
         setUserRole(dataRol.Rol);
-        console.log('Role',userRole);
       } catch (error) {
         console.error('Error al obtener el rol del usuario:', error);
       }
@@ -194,6 +247,20 @@ const seleccionarArchivo = async () => {
 
     obtenerTiposArchivo();
   }, []);
+
+  useEffect(() => {
+    const fetchServerTime = async () => {
+      try {
+        const response = await fetch(`http://${API_IP}:8000/api/time`);
+        const data = await response.json();
+        setFecha(new Date(data.serverTime));
+      } catch (error) {
+        console.error('Error al obtener la hora del servidor:', error);
+      }
+    };
+  
+    fetchServerTime();
+  }, []);
   
 
   return (
@@ -204,7 +271,7 @@ const seleccionarArchivo = async () => {
         <HeaderPaciente navigation={navigation} />
       )}
       <View style={styles.header}>
-          <Text style={styles.headerTitle}>CARGAR ARCHIVOS</Text>
+          <Text style={styles.headerTitle}>CARGAR DOCUMENTACION</Text>
       </View>
 
       <View style={styles.container2}>
@@ -212,7 +279,7 @@ const seleccionarArchivo = async () => {
         {/* Fecha */}
         <Text style={styles.label}>Fecha</Text>
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
-          <Text>{fecha.toLocaleDateString()}</Text>
+          <Text>{`${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`}</Text>
         </TouchableOpacity>
         {showDatePicker && (
           <DateTimePicker
@@ -253,10 +320,12 @@ const seleccionarArchivo = async () => {
             <Text>Tomar Foto</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={seleccionarArchivo}>
-            <Text>Seleccionar Archivo</Text>
+            <Text>Seleccionar</Text>
+            <Text>Archivo</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={seleccionarImagen}>
-            <Text>Seleccionar Imagen</Text>
+            <Text>Seleccionar</Text>
+            <Text>Imagen</Text>
           </TouchableOpacity>
         </View>
 
@@ -275,6 +344,18 @@ const seleccionarArchivo = async () => {
         <TouchableOpacity style={styles.saveButton} onPress={handleUpload}>
           <Text style={styles.saveButtonText}>GUARDAR</Text>
         </TouchableOpacity>
+        <Modal
+        isVisible={isModalVisible}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        backdropOpacity={0.5}
+        onBackdropPress={() => setModalVisible(false)}
+        >
+        <View style={styles.modalContent}>
+          <Icon name="check-circle" size={60} color="#428f7a" />
+          <Text style={styles.modalText}>Archivo subido con éxito</Text>
+        </View>
+      </Modal>
       </View>
     </View>
   );
@@ -293,9 +374,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 15,
     paddingVertical: 10,
     backgroundColor: '#edf1f2',
     borderBottomWidth: 1,
@@ -370,6 +450,19 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#428f7a',
   },
 });
 

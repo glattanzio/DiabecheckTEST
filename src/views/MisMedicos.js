@@ -42,9 +42,9 @@ const MisMedicos = ({ route, navigation }) => {
     <View style={styles.medicoContainer}>
       <UserProfileImage imagePath = {item.RutaFoto} />
       <Text style={styles.medicoName}>{`${item.Apellido} ${item.Nombre}`}</Text>
-      <TouchableOpacity onPress={() => eliminarMedico(item.IdUsuario)}>
+      {/* <TouchableOpacity onPress={() => eliminarMedico(item.IdUsuario)}>
         <Ionicons name="trash" size={24} color="black" style={styles.deleteIcon} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 

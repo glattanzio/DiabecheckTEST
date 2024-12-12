@@ -4,12 +4,22 @@ import { FontAwesome } from '@expo/vector-icons';
 import { API_IP } from '../services/apiService';  
 import HeaderMedico from '../components/Header/HeaderMedico';
 import { auth } from '../services/firebase';
-
+import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const MisSolicitudes = ({ route, navigation }) => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);  // Estado para manejar la carga de datos
   const { medicoId } = route.params;
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const showPopup = () => {
+    setModalVisible(true);
+    setTimeout(() => {
+      setModalVisible(false);
+    }, 2000); // Ocultar automáticamente después de 2 segundos
+  };
+
 
   // Función para obtener las solicitudes pendientes del médico
   useEffect(() => {
@@ -51,7 +61,8 @@ const MisSolicitudes = ({ route, navigation }) => {
     })
     .then(response => response.json())
     .then(data => {
-      Alert.alert('Éxito', 'Solicitud aceptada');
+      showPopup();
+      //Alert.alert('Éxito', 'Solicitud aceptada');
       // Actualizar la lista de solicitudes
       setSolicitudes(solicitudes.filter(solicitud => solicitud.IdConexionMedicoPaciente !== idSolicitud));
     })
@@ -111,7 +122,7 @@ const MisSolicitudes = ({ route, navigation }) => {
       ) : (
         <FlatList
           data={solicitudes}
-          keyExtractor={item => item.IdConexionMedicoPaciente.toString()}  // Asegúrate de que sea un string
+          keyExtractor={item => item.IdConexionMedicoPaciente.toString()}  
           renderItem={({ item }) => (
             <View style={styles.solicitudContainer}>
               <View>
@@ -132,6 +143,18 @@ const MisSolicitudes = ({ route, navigation }) => {
           )}
         />
       )}
+      <Modal
+        isVisible={isModalVisible}
+        animationIn="zoomIn"
+        animationOut="zoomOut"
+        backdropOpacity={0.5}
+        onBackdropPress={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContent}>
+          <Icon name="check-circle" size={60} color="#428f7a" />
+          <Text style={styles.modalText}>Solicitud aceptada</Text>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -193,6 +216,19 @@ const styles = StyleSheet.create({
   },
   rechazarIcon: {
     marginLeft: 15,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#428f7a',
   },
 });
 
