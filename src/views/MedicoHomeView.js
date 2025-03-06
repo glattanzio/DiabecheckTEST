@@ -71,6 +71,7 @@ const MedicoHomeView = ({ navigation }) => {
       <View style={styles.infoContainer}>
           <Text style={styles.patientName}>{`${item.Apellido} ${item.Nombre}`}</Text>
           <Text style={styles.patientInfo}>{`${calculateAge(item.FechaNacimiento)} AÑOS`}</Text>
+          <Text style={styles.patientInfo}>{item.NroDocumento}</Text>
           <Text style={styles.patientInfo}>{item.coberturaMedica}</Text>
       </View>
       <TouchableOpacity onPress={() => navigation.navigate('Historia Medica', { patientId: item.IdUsuario, userId: medicoId })} style={styles.arrowContainer}>

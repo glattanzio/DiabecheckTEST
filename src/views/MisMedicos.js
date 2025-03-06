@@ -41,7 +41,10 @@ const MisMedicos = ({ route, navigation }) => {
   const renderMedico = ({ item }) => (
     <View style={styles.medicoContainer}>
       <UserProfileImage imagePath = {item.RutaFoto} />
-      <Text style={styles.medicoName}>{`${item.Apellido} ${item.Nombre}`}</Text>
+      <View style={styles.infoContainer}>
+        <Text style={styles.medicoName}>{`${item.Apellido} ${item.Nombre}`}</Text>
+        <Text style={styles.medicoInfo}>{`Matricula: ${item.IdMatricula}`}</Text>
+      </View>
       {/* <TouchableOpacity onPress={() => eliminarMedico(item.IdUsuario)}>
         <Ionicons name="trash" size={24} color="black" style={styles.deleteIcon} />
       </TouchableOpacity> */}
@@ -116,12 +119,19 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   medicoName: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
-    flex: 1,
   },
   deleteIcon: {
     marginLeft: 10,
+  },
+  medicoInfo: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: 'bold',
+  },
+  infoContainer: {
+    flex:1,
   },
 });
 
