@@ -19,13 +19,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 
 const CargarArchivo = ({ route, navigation }) => {
-  const { patientId } = route.params;
-  const { userId } = route.params;
-  const [fecha, setFecha] = useState(new Date());
-  const [tipo, setTipo] = useState('');
-  const [archivo, setArchivo] = useState(null);
-  const [tiposArchivo, setTipoArchivo] = useState([]);
-  const [urlArchivo, setUrlArchivo] = useState(null);
+  const { idPatient } = route.params;
+  const { idUser } = route.params;
+  const [date, setDate] = useState(new Date());
+  const [type, setType] = useState('');
+  const [file, setFile] = useState(null);
+  const [fileType, setFileType] = useState([]);
+  const [fileUrl, setFileUrl] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [open, setOpen] = useState(false);
   const [userRole, setUserRole] = useState(null); 
@@ -34,9 +34,9 @@ const CargarArchivo = ({ route, navigation }) => {
 
 
   const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || fecha;
+    const currentDate = selectedDate || date;
     setShowDatePicker(Platform.OS === 'ios');
-    setFecha(currentDate);
+    setDate(currentDate);
   };
 
   const seleccionarArchivo = async () => {
@@ -68,7 +68,7 @@ const CargarArchivo = ({ route, navigation }) => {
           return;
         }
   
-        setArchivo(uri);
+        setFile(uri);
       }
     } catch (error) {
       console.error('Error al seleccionar el archivo:', error);
@@ -100,7 +100,7 @@ const CargarArchivo = ({ route, navigation }) => {
         return;
       }
   
-      setArchivo(selectedAsset.uri);
+      setFile(selectedAsset.uri);
     }
   };
   
@@ -126,7 +126,7 @@ const CargarArchivo = ({ route, navigation }) => {
         return;
       }
   
-      setArchivo(selectedAsset.uri);
+      setFile(selectedAsset.uri);
     }
   };  
 
@@ -138,50 +138,50 @@ const CargarArchivo = ({ route, navigation }) => {
   };
 
   const handleUpload = async () => {
-    if (!archivo) {
+    if (!file) {
       alert('No se ha seleccionado ningún archivo');
       return;
     }
   
     try {
       // Leer el archivo como blob usando FileSystem
-      const fileInfo = await FileSystem.getInfoAsync(archivo);
+      const fileInfo = await FileSystem.getInfoAsync(file);
 
       if (!fileInfo.exists) {
         alert('El archivo seleccionado no existe.');
         return;
       }
       // Subir el archivo a Firebase
-      const response = await fetch(archivo);
+      const response = await fetch(file);
       //console.log('response', response);
       const blob = await response.blob();
       //console.log('blob', blob);
-      const archivoRef = ref(storage, `${FilesPath}${patientId}/${new Date().toISOString()}`);
-      //console.log('archivoRef', archivoRef);
-      await uploadBytes(archivoRef, blob); //pincha aca
-      const downloadURL = await getDownloadURL(archivoRef);
+      const fileRef = ref(storage, `${FilesPath}${idPatient}/${new Date().toISOString()}`);
+      //console.log('fileRef', fileRef);
+      await uploadBytes(fileRef, blob); //pincha aca
+      const downloadURL = await getDownloadURL(fileRef);
       //console.log('downloadURL', downloadURL);
-      setUrlArchivo(downloadURL);
+      setFileUrl(downloadURL);
       //console.log('nombre',fileName);
      
       // Preparar los datos para enviar al backend
-      const archivoData = {
-        id_paciente: patientId,
-        nombre: fileName,
-        ruta_archivo: downloadURL,  // URL del archivo en Firebase
-        fecha_publicacion: new Date().toISOString(),  // Fecha actual
-        id_usuario: userId,  // El ID del usuario que carga el archivo (autenticado)
-        id_tipoarchivo: tipo // El id del tipo de archivo (planilla, estudio, etc)
+      const fileData = {
+        IdPatient: idPatient,
+        Name: fileName,
+        FilePath: downloadURL,  // URL del archivo en Firebase
+        PublishDate: new Date().toISOString(),  // Fecha actual
+        IdUser: idUser,  // El ID del usuario que carga el archivo (autenticado)
+        IdFileType: type // El id del tipo de archivo (planilla, estudio, etc)
       };
   
 
       // Enviar los datos al backend
-      const responseBackend = await fetch(`http://${API_IP}:8000/archivos/`, {
+      const responseBackend = await fetch(`http://${API_IP}:8000/files/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(archivoData),
+        body: JSON.stringify(fileData),
       });
   
       if (responseBackend.ok) {
@@ -193,10 +193,10 @@ const CargarArchivo = ({ route, navigation }) => {
       }
   
       // Limpiar el formulario después de la subida
-      setArchivo(null);
-      setTipo('');
+      setFile(null);
+      setType('');
       setfileName('');
-      setFecha(new Date());
+      setDate(new Date());
     } catch (error) {
       console.log('Error en la subida:', error);
       alert('Error al subir el archivo: ' + error);
@@ -208,7 +208,7 @@ const CargarArchivo = ({ route, navigation }) => {
       try {
         const token = await auth.currentUser.getIdToken();
 
-        const response = await fetch(`http://${API_IP}:8000/user-role/?user_id=${userId}`, {
+        const response = await fetch(`http://${API_IP}:8000/user_role/?idUser=${idUser}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -219,8 +219,8 @@ const CargarArchivo = ({ route, navigation }) => {
           throw new Error('Error al obtener el rol del usuario');
         }
   
-        const dataRol = await response.json();
-        setUserRole(dataRol.Rol);
+        const dataRole = await response.json();
+        setUserRole(dataRole.Role);
       } catch (error) {
         console.error('Error al obtener el rol del usuario:', error);
       }
@@ -232,14 +232,14 @@ const CargarArchivo = ({ route, navigation }) => {
   useEffect(() => {
     const obtenerTiposArchivo = async () => {
       try {
-        const response = await fetch(`http://${API_IP}:8000/tipoarchivo/`);
+        const response = await fetch(`http://${API_IP}:8000/fileTypes/`);
         const data = await response.json();
         const formattedData = data.map((item) => ({
-          label: item.descripcion,
-          value: item.idtipoArchivo
+          label: item.Description,
+          value: item.IdFileType
         }));
   
-        setTipoArchivo(formattedData);
+        setFileType(formattedData);
       } catch (error) {
         console.error('Error al obtener tipos de archivo:', error);
       }
@@ -253,7 +253,7 @@ const CargarArchivo = ({ route, navigation }) => {
       try {
         const response = await fetch(`http://${API_IP}:8000/api/time`);
         const data = await response.json();
-        setFecha(new Date(data.serverTime));
+        setDate(new Date(data.serverTime));
       } catch (error) {
         console.error('Error al obtener la hora del servidor:', error);
       }
@@ -265,7 +265,7 @@ const CargarArchivo = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {userRole === 'Medico' ? (
+      {userRole === 'Doctor' ? (
         <HeaderMedico navigation={navigation} />
       ) : (
         <HeaderPaciente navigation={navigation} />
@@ -279,11 +279,11 @@ const CargarArchivo = ({ route, navigation }) => {
         {/* Fecha */}
         <Text style={styles.label}>Fecha</Text>
         <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
-          <Text>{`${fecha.getDate()}/${fecha.getMonth() + 1}/${fecha.getFullYear()}`}</Text>
+          <Text>{`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`}</Text>
         </TouchableOpacity>
         {showDatePicker && (
           <DateTimePicker
-            value={fecha}
+            value={date}
             mode="date"
             display="default"
             onChange={handleDateChange}
@@ -302,11 +302,11 @@ const CargarArchivo = ({ route, navigation }) => {
       <Text style={styles.label}>Tipo</Text>
       <DropDownPicker
         open={open}
-        value={tipo}
-        items={tiposArchivo}
+        value={type}
+        items={fileType}
         setOpen={setOpen}
-        setValue={setTipo}
-        setItems={setTipoArchivo}
+        setValue={setType}
+        setItems={setFileType}
         placeholder="Selecciona un tipo"
         containerStyle={{ height: 40, marginBottom: 20 }}
         style={{ backgroundColor: '#fafafa' }}
@@ -329,12 +329,12 @@ const CargarArchivo = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {archivo && (
+        {file && (
         <View style={styles.selectedFileContainer}>
           <Text style={styles.fileNameText}>
             Archivo seleccionado correctamente
           </Text>
-          <TouchableOpacity onPress={() => setArchivo(null)} style={styles.deleteButton}>
+          <TouchableOpacity onPress={() => setFile(null)} style={styles.deleteButton}>
             <Ionicons name="trash-outline" size={24} color="black" />
           </TouchableOpacity>
         </View>

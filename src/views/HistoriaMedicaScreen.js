@@ -5,15 +5,15 @@ import { auth } from '../services/firebase';
 import HeaderMedico from '../components/Header/HeaderMedico';
 
 const HistoriaMedicaScreen = ({ route, navigation }) => {
-  const { patientId } = route.params;
-  const { userId } = route.params;
+  const { idPatient } = route.params;
+  const { idUser } = route.params;
   const [patientData, setPatientData] = useState(null);
 
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await fetch(`http://${API_IP}:8000/detalles_pacientes/${patientId}/`, {
+        const response = await fetch(`http://${API_IP}:8000/patient_details/${idPatient}/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
     };
 
     fetchPatientData();
-  }, [patientId]);
+  }, [idPatient]);
 
   if (!patientData) {
     return (
@@ -65,15 +65,15 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
           <Text style={styles.headerTitle}>HISTORIA MEDICA</Text>
         </View>
         <View style={styles.container2}>
-          <Text style={styles.patientName}>{`${patientData.Apellido} ${patientData.Nombre}`}</Text>
+          <Text style={styles.patientName}>{`${patientData.LastName} ${patientData.Name}`}</Text>
           <View style={styles.infoBox}>
-            <Text style={styles.infoText}>DNI: {patientData.NroDocumento}</Text>
-            <Text style={styles.infoText}>Edad: {calculateAge(patientData.FechaNacimiento)} Años</Text>
-            <Text style={styles.infoText}>Diagnostico: {patientData.diagnostico}</Text>
-            <Text style={styles.infoText}>Cobertura: {patientData.coberturaMedica}</Text>
-            <Text style={styles.infoText}>Altura: {patientData.Altura} cm</Text>
-            <Text style={styles.infoText}>Peso: {patientData.Peso} kg</Text>
-            <Text style={styles.infoText}>Ultima Consulta: {patientData.FechaUltimaConsulta}</Text>
+            <Text style={styles.infoText}>DNI: {patientData.DocumentNumber}</Text>
+            <Text style={styles.infoText}>Edad: {calculateAge(patientData.BirthDate)} Años</Text>
+            <Text style={styles.infoText}>Diagnostico: {patientData.Diagnosis}</Text>
+            <Text style={styles.infoText}>Cobertura: {patientData.Healthcare}</Text>
+            <Text style={styles.infoText}>Altura: {patientData.Height} cm</Text>
+            <Text style={styles.infoText}>Peso: {patientData.Weight} kg</Text>
+            <Text style={styles.infoText}>Ultima Consulta: {patientData.DateLastCheckUp}</Text>
           </View>
 
           <TouchableOpacity style={styles.editButton} onPress={() => {/* Acción para editar la historia médica */}}>
@@ -82,21 +82,21 @@ const HistoriaMedicaScreen = ({ route, navigation }) => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Ver Mediciones', { patientId: patientData.IdUsuario, userId: userId })}
+            onPress={() => navigation.navigate('Ver Mediciones', { idPatient: patientData.IdUser, idUser: idUser })}
           >
             <Text style={styles.buttonText}>Ver Mediciones</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Ver Archivos', { patientId: patientData.IdUsuario, userId: userId })}
+            onPress={() => navigation.navigate('Ver Archivos', { idPatient: patientData.IdUser, idUser: idUser })}
           >
             <Text style={styles.buttonText}>Ver Documentacion</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => navigation.navigate('Cargar Archivo', { patientId: patientData.IdUsuario, userId: userId })}
+            onPress={() => navigation.navigate('Cargar Archivo', { idPatient: patientData.IdUser, idUser: idUser })}
           >
             <Text style={styles.buttonText}>Cargar Documentacion</Text>
           </TouchableOpacity>

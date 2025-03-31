@@ -15,7 +15,7 @@ const MisMedicos = ({ route, navigation }) => {
       try {
         const token = await auth.currentUser.getIdToken();
         if (patientId) {
-          const response = await fetch(`http://${API_IP}:8000/listado_medicos/${patientId}`, {
+          const response = await fetch(`http://${API_IP}:8000/doctor_list/${patientId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

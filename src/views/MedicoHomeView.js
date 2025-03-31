@@ -8,30 +8,30 @@ import { API_IP } from '../services/apiService';
 import { UserProfileImage } from '../services/storage';
 
 const MedicoHomeView = ({ navigation }) => {
-  const [medicoId, setMedicoId] = useState(null);
+  const [idDoctor, setIdDoctor] = useState(null);
   const [patients, setPatients] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const fetchMedicoId = async () => {
+    const fetchidDoctor = async () => {
       try {
-        const storedMedicoId = await AsyncStorage.getItem('IdUsuario');
-        if (storedMedicoId) {
-          setMedicoId(parseInt(storedMedicoId));
+        const storedidDoctor = await AsyncStorage.getItem('IdUser');
+        if (storedidDoctor) {
+          setIdDoctor(parseInt(storedidDoctor));
         }
       } catch (error) {
-        console.error('Error al obtener el medicoId almacenado:', error);
+        console.error('Error al obtener el idDoctor almacenado:', error);
       }
     };
 
-    fetchMedicoId();
+    fetchidDoctor();
   }, []);
   useEffect(() => {
     const fetchPatients = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        if (medicoId) {
-          const response = await fetch(`http://${API_IP}:8000/listado_pacientes/${medicoId}/?search_query=${encodeURIComponent(searchQuery)}`, {
+        if (idDoctor) {
+          const response = await fetch(`http://${API_IP}:8000/patients_list/${idDoctor}/?search_query=${encodeURIComponent(searchQuery)}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const MedicoHomeView = ({ navigation }) => {
       }
     };
     fetchPatients();
-  }, [medicoId, searchQuery]);
+  }, [idDoctor, searchQuery]);
   const calculateAge = (birthDate) => {
     const today = new Date();
     const birthDateObj = new Date(birthDate);
@@ -67,14 +67,14 @@ const MedicoHomeView = ({ navigation }) => {
 
   const renderPatient = ({ item }) => (
     <View style={styles.patientContainer}>
-      <UserProfileImage imagePath = {item.RutaFoto} />
+      <UserProfileImage imagePath = {item.PicturePath} />
       <View style={styles.infoContainer}>
-          <Text style={styles.patientName}>{`${item.Apellido} ${item.Nombre}`}</Text>
-          <Text style={styles.patientInfo}>{`${calculateAge(item.FechaNacimiento)} AÑOS`}</Text>
-          <Text style={styles.patientInfo}>{item.NroDocumento}</Text>
-          <Text style={styles.patientInfo}>{item.coberturaMedica}</Text>
+          <Text style={styles.patientName}>{`${item.LastName} ${item.Name}`}</Text>
+          <Text style={styles.patientInfo}>{`${calculateAge(item.BirthDate)} AÑOS`}</Text>
+          <Text style={styles.patientInfo}>{item.DocumentNumber}</Text>
+          <Text style={styles.patientInfo}>{item.Healthcare}</Text>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('Historia Medica', { patientId: item.IdUsuario, userId: medicoId })} style={styles.arrowContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('Historia Medica', { idPatient: item.IdUser, idUser: idDoctor })} style={styles.arrowContainer}>
         <Text style={styles.arrow}>&gt;</Text>
       </TouchableOpacity>
     </View>
@@ -92,7 +92,7 @@ const MedicoHomeView = ({ navigation }) => {
       <FlatList
         data={patients}
         renderItem={renderPatient}
-        keyExtractor={item => item.IdUsuario.toString()}
+        keyExtractor={item => item.IdUser.toString()}
       />
     </View>
   );

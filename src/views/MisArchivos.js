@@ -16,12 +16,12 @@ import * as DocumentPicker from 'expo-downloads-manager';
 
 
 const MisArchivos = ({ route, navigation }) => {
-  const { patientId } = route.params;
-  const { userId } = route.params;
-  const [archivos, setArchivos] = useState([]);
+  const { idPatient } = route.params;
+  const { idUser } = route.params;
+  const [files, setFiles] = useState([]);
   const [userRole, setUserRole] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [tipoArchivo, setTipoArchivo] = useState("0"); // Estado para el filtro de tipo
+  const [fileType, setFileType] = useState("0"); // Estado para el filtro de tipo
   const [sortDate, setSortDate] = useState(null); // Estado para el orden por fecha
 
 
@@ -43,15 +43,15 @@ const MisArchivos = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    const fetchArchivos = async () => {
+    const fetchFiles = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        if (patientId) {
+        if (idPatient) {
           // Modify URL to include sorting parameter
-          const url = new URL(`http://${API_IP}:8000/archivos/${patientId}`);
+          const url = new URL(`http://${API_IP}:8000/patient_files/${idPatient}`);
           
-          if (tipoArchivo) {
-            url.searchParams.append('tipo', tipoArchivo);
+          if (fileType) {
+            url.searchParams.append('fileType', fileType);
           }
           
           if (sortDate) {
@@ -67,26 +67,26 @@ const MisArchivos = ({ route, navigation }) => {
           });
 
           if (!response.ok) {
-            throw new Error('Error al obtener la lista de archivos');
+            throw new Error('Error al obtener la lista de files');
           }
 
           const data = await response.json();
-          setArchivos(data);
+          setFiles(data);
         }
       } catch (error) {
-        console.error('Error al obtener la lista de archivos:', error);
+        console.error('Error al obtener la lista de files:', error);
       }
     };
 
-    fetchArchivos();
-  }, [patientId, tipoArchivo, sortDate]);  // Volver a ejecutar cuando cambie el filtro
+    fetchFiles();
+  }, [idPatient, fileType, sortDate]);  // Volver a ejecutar cuando cambie el filtro
 
   useEffect(() => {
     const fetchRole = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
 
-        const response = await fetch(`http://${API_IP}:8000/user-role/?user_id=${userId}`, {
+        const response = await fetch(`http://${API_IP}:8000/user_role/?idUser=${idUser}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -97,8 +97,8 @@ const MisArchivos = ({ route, navigation }) => {
           throw new Error('Error al obtener el rol del usuario');
         }
 
-        const dataRol = await response.json();
-        setUserRole(dataRol.Rol);
+        const dataRole = await response.json();
+        setUserRole(dataRole.Role);
       } catch (error) {
         console.error('Error al obtener el rol del usuario:', error);
       }
@@ -107,32 +107,32 @@ const MisArchivos = ({ route, navigation }) => {
     fetchRole();
   }, []);
 
-  const handleEliminar = (idArchivo) => {
-    fetch(`http://${API_IP}:8000/archivos/borrar/${idArchivo}`, {
+  const handleDelete = (idFile) => {
+    fetch(`http://${API_IP}:8000/delete_file/${idFile}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ idArchivo }),
+      body: JSON.stringify({ idFile }),
     })
       .then(response => response.json())
       .then(() => {
         showPopup();
-        setArchivos(archivos.filter(archivo => archivo.IdArchivo !== idArchivo));
+        setFiles(files.filter(file => file.IdFile !== idFile));
       })
-      .catch(error => console.error('Error eliminando archivo:', error));
+      .catch(error => console.error('Error eliminando file:', error));
   };
 
-  const renderArchivos = ({ item }) => (
-      <View style={styles.archivoContainer}>
+  const renderFiles = ({ item }) => (
+      <View style={styles.fileContainer}>
         <View style={styles.infoContainer}>
-          <Text style={styles.archivoInfo}>{`${item.Nombre}`}</Text>
-          <Text style={styles.archivoInfo}>{`${formatDate(item.FechaPublicacion)}`}</Text>
+          <Text style={styles.fileInfo}>{`${item.Name}`}</Text>
+          <Text style={styles.fileInfo}>{`${formatDate(item.PublishDate)}`}</Text>
         </View>
-        <TouchableOpacity onPress={() => descargarArchivo(item.IdArchivo)}>
+        <TouchableOpacity onPress={() => loadFile(item.IdFile)}>
           <Ionicons name="download" size={24} color="black" style={styles.downloadIcon} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleEliminar(item.IdArchivo)}>
+        <TouchableOpacity onPress={() => handleDelete(item.IdFile)}>
           <Ionicons name="trash" size={24} color="black" style={styles.deleteIcon} />
         </TouchableOpacity>
       </View>
@@ -148,10 +148,10 @@ const MisArchivos = ({ route, navigation }) => {
   }
 
 
-  const descargarArchivo = async (idArchivo) => {
+  const loadFile = async (idFile) => {
     try {
       const token = await auth.currentUser.getIdToken();
-      const response = await fetch(`http://${API_IP}:8000/archivo/${idArchivo}`, {
+      const response = await fetch(`http://${API_IP}:8000/file/${idFile}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -160,13 +160,13 @@ const MisArchivos = ({ route, navigation }) => {
       });
   
       if (!response.ok) {
-        throw new Error('Error obteniendo detalles del archivo');
+        throw new Error('Error obteniendo detalles del file');
       }
   
       const fileData = await response.json();
-      const firebaseUrl = fileData.RutaArchivo;
+      const firebaseUrl = fileData.FilePath;
   
-      const cleanFileName = fileData.Nombre.replace(/[^a-z0-9.]/gi, '_');
+      const cleanFileName = fileData.Name.replace(/[^a-z0-9.]/gi, '_');
       const fileUri = `${FileSystem.documentDirectory}${cleanFileName}`;
   
       // Download file
@@ -176,14 +176,14 @@ const MisArchivos = ({ route, navigation }) => {
       await Sharing.shareAsync(fileUri);
   
     } catch (error) {
-      console.error('Error descargando archivo:', error);
-      Alert.alert('Error', 'No se pudo descargar el archivo');
+      console.error('Error descargando file:', error);
+      Alert.alert('Error', 'No se pudo descargar el file');
     }
   };
 
   return (
     <View style={styles.container}>
-      {userRole === 'Medico' ? (
+      {userRole === 'Doctor' ? (
         <HeaderMedico navigation={navigation} />
       ) : (
         <HeaderPaciente navigation={navigation} />
@@ -201,14 +201,14 @@ const MisArchivos = ({ route, navigation }) => {
             <Ionicons name="arrow-down" size={30} color="black" style={styles.sortButton} />
           )}
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Cargar Archivo', { patientId, userId })}>
+        <TouchableOpacity onPress={() => navigation.navigate('Cargar Archivo', { idPatient, idUser })}>
           <Ionicons name="add-circle-outline" size={30} color="black" style={styles.addButton} />
         </TouchableOpacity>
       </View>
       <Picker
-        selectedValue={tipoArchivo}
+        selectedValue={fileType}
         onValueChange={(itemValue) => {
-          setTipoArchivo(itemValue);
+          setFileType(itemValue);
         }}
         style={styles.picker}
       >
@@ -219,9 +219,9 @@ const MisArchivos = ({ route, navigation }) => {
         <Picker.Item label="Extraccion de Sangre" value="4" />
       </Picker>
       <FlatList
-        data={archivos}
-        renderItem={renderArchivos}
-        keyExtractor={item => item.IdArchivo.toString()}
+        data={files}
+        renderItem={renderFiles}
+        keyExtractor={item => item.IdFile.toString()}
         contentContainerStyle={styles.listContainer}
       />
       <Modal

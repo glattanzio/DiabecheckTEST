@@ -9,7 +9,7 @@ import HeaderPaciente from '../components/Header/HeaderPaciente';
 
 const AgregarMedico = ({ route, navigation }) => {
   const { patientId } = route.params;
-  const [matricula, setMatricula] = useState('');
+  const [doctorLicense, setDoctorLicense] = useState('');
   const [medico, setMedico] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ const AgregarMedico = ({ route, navigation }) => {
   const buscarMedico = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://${API_IP}:8000/buscar_medico/${matricula}`, {
+      const response = await fetch(`http://${API_IP}:8000/search_doctor/${doctorLicense}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -56,13 +56,13 @@ const AgregarMedico = ({ route, navigation }) => {
         return;
       }
 
-      const response = await fetch(`http://${API_IP}:8000/solicitud-medico/`, {
+      const response = await fetch(`http://${API_IP}:8000/doctor_connection_request/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          matricula: parseInt(matricula),
+          doctorLicense: parseInt(doctorLicense),
           paciente_id: parseInt(patientId),
         }),
       });
@@ -75,7 +75,7 @@ const AgregarMedico = ({ route, navigation }) => {
       setMensaje('Solicitud enviada con éxito');
       showPopup();
       //Alert.alert('Éxito', 'Solicitud enviada con éxito');
-      setMatricula('');
+      setDoctorLicense('');
       setMedico(null);
       setMensaje('');
     } catch (error) {
@@ -98,8 +98,8 @@ const AgregarMedico = ({ route, navigation }) => {
             style={styles.input}
             placeholder="Ingresar Matrícula Médica"
             placeholderTextColor="#8e8e8e"
-            value={matricula}
-            onChangeText={setMatricula}
+            value={doctorLicense}
+            onChangeText={setDoctorLicense}
             keyboardType="numeric"
           />
           <TouchableOpacity style={styles.searchButton} onPress={buscarMedico}>
@@ -116,7 +116,7 @@ const AgregarMedico = ({ route, navigation }) => {
             </View>
             <View style={styles.medicoDetailsContainer}>
               <Text style={styles.medicoName}>{`Dr. ${medico.Nombre} ${medico.Apellido}`}</Text>
-              <Text style={styles.medicoMatricula}>Matrícula: {matricula}</Text>
+              <Text style={styles.medicoMatricula}>Matrícula: {doctorLicense}</Text>
             </View>
           </View>
         ) : mensaje ? (

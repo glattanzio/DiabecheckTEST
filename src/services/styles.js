@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  archivoContainer: {
+  fileContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -72,7 +72,7 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1,
   },
-  archivoInfo: {
+  fileInfo: {
     fontSize: 14,
     color: '#666',
     fontWeight: 'bold',

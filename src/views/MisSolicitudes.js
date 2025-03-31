@@ -26,7 +26,7 @@ const MisSolicitudes = ({ route, navigation }) => {
     const fetchSolicitudes = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await fetch(`http://${API_IP}:8000/medico/solicitudes/${medicoId}`, {
+        const response = await fetch(`http://${API_IP}:8000/doctor_connection_requests/${medicoId}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -52,7 +52,7 @@ const MisSolicitudes = ({ route, navigation }) => {
 
   // Función para manejar la aceptación de la solicitud
   const handleAceptar = (idSolicitud) => {
-    fetch(`http://${API_IP}:8000/medico/solicitudes/aceptar/${idSolicitud}/`, {
+    fetch(`http://${API_IP}:8000/accept_doctor_connection_request/${idSolicitud}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const MisSolicitudes = ({ route, navigation }) => {
 
   // Función para manejar el rechazo de la solicitud
   const handleRechazar = (idSolicitud) => {
-    fetch(`http://${API_IP}:8000/medico/solicitudes/rechazar/${idSolicitud}/`, {
+    fetch(`http://${API_IP}:8000/reject_doctor_connection_request/${idSolicitud}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -7,8 +7,8 @@ import { API_IP } from '../services/apiService';
 import { auth } from '../services/firebase';
 
 const VerMedicionesScreen = ({ route, navigation }) => {
-  const { patientId } = route.params;
-  const { userId } = route.params;
+  const { idPatient } = route.params;
+  const { idUser } = route.params;
   const [mediciones, setMediciones] = useState([]);
   const [userRole, setUserRole] = useState(null); 
   const [openMonth, setOpenMonth] = useState(false);
@@ -52,14 +52,14 @@ const VerMedicionesScreen = ({ route, navigation }) => {
     { label: '2022', value: 2022 },
     { label: '2023', value: 2023 },
     { label: '2024', value: 2024 },
-    { label: '2024', value: 2025 }
+    { label: '2025', value: 2025 }
   ]);
 
   useEffect(() => {
     const fetchMediciones = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await fetch(`http://${API_IP}:8000/pacientes/${patientId}/mediciones?month=${selectedMonth}&year=${selectedYear}`, {
+        const response = await fetch(`http://${API_IP}:8000/patient_measurements/${idPatient}/?month=${selectedMonth}&year=${selectedYear}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -84,10 +84,10 @@ const VerMedicionesScreen = ({ route, navigation }) => {
     const fetchRole = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        console.log('UserId', userId);
-        console.log('PacienteId', patientId);
+        console.log('UserId', idUser);
+        console.log('PacienteId', idPatient);
 
-        const response = await fetch(`http://${API_IP}:8000/user-role/?user_id=${userId}`, {
+        const response = await fetch(`http://${API_IP}:8000/user_role/?idUser=${idUser}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -99,7 +99,7 @@ const VerMedicionesScreen = ({ route, navigation }) => {
         }
   
         const dataRol = await response.json();
-        setUserRole(dataRol.Rol);
+        setUserRole(dataRol.Role);
         console.log('Role',userRole);
       } catch (error) {
         console.error('Error al obtener el rol del usuario:', error);
@@ -109,18 +109,18 @@ const VerMedicionesScreen = ({ route, navigation }) => {
     fetchRole();
   }, []);
 
-  const getGlucoseStatus = (glucosa) => {
-    if (glucosa > 150) {
+  const getGlucoseStatus = (glucose) => {
+    if (glucose > 150) {
       return {
         status: '⛔️',
         color: '#FF0000'
       }; // Bad
-    } else if (glucosa >= 120 && glucosa <= 150) {
+    } else if (glucose >= 120 && glucose <= 150) {
       return {
         status: '✅',
         color: '#00FF00'
       }; // Good
-    } else if (glucosa >= 100 && glucosa < 120) {
+    } else if (glucose >= 100 && glucose < 120) {
       return {
         status: '⚠️',
         color: '#FFFF00'
@@ -134,7 +134,7 @@ const VerMedicionesScreen = ({ route, navigation }) => {
   };
   
   const renderMedicion = ({ item }) => {
-    const glucoseStatus = getGlucoseStatus(item.Glucosa);
+    const glucoseStatus = getGlucoseStatus(item.Glucose);
   
     return (
       <View style={styles.medicionContainer}>
@@ -143,7 +143,7 @@ const VerMedicionesScreen = ({ route, navigation }) => {
         </View>
   
         <Text style={styles.fechaHora}>
-          {`${formatDateTime(item.Fecha)}`}
+          {`${formatDateTime(item.MeasureDate)}`}
         </Text>
   
         <View style={styles.row}>
@@ -153,9 +153,9 @@ const VerMedicionesScreen = ({ route, navigation }) => {
         </View>
   
         <View style={styles.row}>
-          <Text style={styles.value}>{item.Glucosa} mg/dl</Text>
-          <Text style={styles.value}>{item.Insulina} u</Text>
-          <Text style={styles.value}>{item.Carbohidratos} g</Text>
+          <Text style={styles.value}>{item.Glucose} mg/dl</Text>
+          <Text style={styles.value}>{item.Insulin} u</Text>
+          <Text style={styles.value}>{item.Carbohidrates} g</Text>
         </View>
       </View>
     );
@@ -163,7 +163,7 @@ const VerMedicionesScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {userRole === 'Medico' ? (
+      {userRole === 'Doctor' ? (
         <HeaderMedico navigation={navigation} />
       ) : (
         <HeaderPaciente navigation={navigation} />

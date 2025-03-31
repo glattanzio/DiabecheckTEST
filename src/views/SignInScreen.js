@@ -16,7 +16,7 @@ const SignInScreen = ({ navigation }) => {
       // Obtener el token del usuario autenticado
       const token = await auth.currentUser.getIdToken();
       // Obtener el rol del usuario desde el backend
-      const response = await fetch(`http://${API_IP}:8000/user-role/?email=${encodeURIComponent(email)}`, {
+      const response = await fetch(`http://${API_IP}:8000/user_role/?email=${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -29,18 +29,18 @@ const SignInScreen = ({ navigation }) => {
       
       const data = await response.json();
 
-      const role = data.Rol;
+      const role = data.Role;
       await AsyncStorage.setItem('token', token);
 
       // Navegar a la pantalla adecuada basada en el rol del usuario
-      if (role === 'Medico') {
-        const IdUsuario = data.IdUsuario; //paso el IdUsuario en vez del medicoId porque en la tabla de conexion en la db, usa el userid
-        await AsyncStorage.setItem('IdUsuario', IdUsuario.toString());
-        navigation.navigate('Medico Home View', { IdUsuario });
+      if (role === 'Doctor') {
+        const IdUser = data.IdUser; //paso el IdUser en vez del medicoId porque en la tabla de conexion en la db, usa el userid
+        await AsyncStorage.setItem('IdUser', IdUser.toString());
+        navigation.navigate('Medico Home View', { IdUser });
       } else if (role === 'Paciente') {
-        const IdUsuario = data.IdUsuario;
-        await AsyncStorage.setItem('IdUsuario', IdUsuario.toString());
-        navigation.navigate('Cargar Medicion', { IdUsuario });
+        const IdUser = data.IdUser;
+        await AsyncStorage.setItem('IdUser', IdUser.toString());
+        navigation.navigate('Cargar Medicion', { IdUser });
       } else {
         console.error('Rol desconocido del usuario:', role);
       }
