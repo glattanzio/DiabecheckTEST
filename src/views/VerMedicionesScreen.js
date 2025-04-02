@@ -84,7 +84,7 @@ const VerMedicionesScreen = ({ route, navigation }) => {
     const fetchRole = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        console.log('UserId', idUser);
+        console.log('idUser', idUser);
         console.log('PacienteId', idPatient);
 
         const response = await fetch(`http://${API_IP}:8000/user_role/?idUser=${idUser}`, {
@@ -99,6 +99,7 @@ const VerMedicionesScreen = ({ route, navigation }) => {
         }
   
         const dataRol = await response.json();
+        console.log('Role',dataRol.Role);
         setUserRole(dataRol.Role);
         console.log('Role',userRole);
       } catch (error) {
@@ -204,10 +205,10 @@ const VerMedicionesScreen = ({ route, navigation }) => {
       />
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Ver Archivos', { patientId, userId })}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Ver Archivos', { idPatient, idUser })}>
           <Text style={styles.buttonText}>Ver Documentacion</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cargar Archivo', { patientId, userId })}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cargar Archivo', { idPatient, idUser })}>
           <Text style={styles.buttonText}>Cargar Documentacion</Text>
         </TouchableOpacity>
       </View>

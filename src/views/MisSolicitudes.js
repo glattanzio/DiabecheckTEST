@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 const MisSolicitudes = ({ route, navigation }) => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);  // Estado para manejar la carga de datos
-  const { medicoId } = route.params;
+  const { idDoctor } = route.params;
   const [isModalVisible, setModalVisible] = useState(false);
 
   const showPopup = () => {
@@ -26,7 +26,7 @@ const MisSolicitudes = ({ route, navigation }) => {
     const fetchSolicitudes = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await fetch(`http://${API_IP}:8000/doctor_connection_requests/${medicoId}`, {
+        const response = await fetch(`http://${API_IP}:8000/doctor_connection_requests/${idDoctor}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -47,7 +47,7 @@ const MisSolicitudes = ({ route, navigation }) => {
     };
 
     fetchSolicitudes();
-  }, [medicoId]);
+  }, [idDoctor]);
 
 
   // Función para manejar la aceptación de la solicitud

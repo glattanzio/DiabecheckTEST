@@ -7,15 +7,15 @@ import HeaderPaciente from '../components/Header/HeaderPaciente';
 import { UserProfileImage } from '../services/storage';
 
 const MisMedicos = ({ route, navigation }) => {
-  const { patientId } = route.params;
+  const { idPatient } = route.params;
   const [medicos, setMedicos] = useState([]);
 
   useEffect(() => {
     const fetchMedicos = async () => {
       try {
         const token = await auth.currentUser.getIdToken();
-        if (patientId) {
-          const response = await fetch(`http://${API_IP}:8000/doctor_list/${patientId}`, {
+        if (idPatient) {
+          const response = await fetch(`http://${API_IP}:8000/doctor_list/${idPatient}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -36,16 +36,16 @@ const MisMedicos = ({ route, navigation }) => {
     };
 
     fetchMedicos();
-  }, [patientId]);
+  }, [idPatient]);
 
   const renderMedico = ({ item }) => (
     <View style={styles.medicoContainer}>
-      <UserProfileImage imagePath = {item.RutaFoto} />
+      <UserProfileImage imagePath = {item.PicturePath} />
       <View style={styles.infoContainer}>
-        <Text style={styles.medicoName}>{`${item.Apellido} ${item.Nombre}`}</Text>
-        <Text style={styles.medicoInfo}>{`Matricula: ${item.IdMatricula}`}</Text>
+        <Text style={styles.medicoName}>{`${item.LastName} ${item.Name}`}</Text>
+        <Text style={styles.medicoInfo}>{`Matricula: ${item.IdDoctorLicense}`}</Text>
       </View>
-      {/* <TouchableOpacity onPress={() => eliminarMedico(item.IdUsuario)}>
+      {/* <TouchableOpacity onPress={() => eliminarMedico(item.IdUser)}>
         <Ionicons name="trash" size={24} color="black" style={styles.deleteIcon} />
       </TouchableOpacity> */}
     </View>
@@ -60,14 +60,14 @@ const MisMedicos = ({ route, navigation }) => {
       <HeaderPaciente navigation={navigation} />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>MIS MEDICOS</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Agregar Medico', { patientId })}>
+        <TouchableOpacity onPress={() => navigation.navigate('Agregar Medico', { idPatient })}>
           <Ionicons name="add-circle-outline" size={30} color="black" style={styles.addButton} />
         </TouchableOpacity>
       </View>
       <FlatList
         data={medicos}
         renderItem={renderMedico}
-        keyExtractor={item => item.IdUsuario.toString()}
+        keyExtractor={item => item.IdUser.toString()}
         contentContainerStyle={styles.listContainer}
       />
     </View>

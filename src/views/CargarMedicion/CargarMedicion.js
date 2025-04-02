@@ -10,7 +10,8 @@ import { API_IP } from '../../services/apiService';
 import Modal from 'react-native-modal';
 //import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const CargarMedicion = ({ navigation }) => {
+const CargarMedicion = ({ route, navigation }) => {
+  const { idPatient } = route.params;
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -64,7 +65,7 @@ const CargarMedicion = ({ navigation }) => {
         MeasurementDate: date.toISOString(),
         Glucose: glucose ? parseFloat(glucose) : null,
         Insulin: insulin ? parseFloat(insulin) : null,
-        Carbohydrates: carbs ? parseFloat(carbs) : null,
+        Carbohidrates: carbs ? parseFloat(carbs) : null,
         IdPatient: parseInt(IdUser, 10)
       };
       await postData(newMeasurement);

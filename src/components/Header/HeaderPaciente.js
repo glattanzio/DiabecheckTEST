@@ -10,7 +10,7 @@ const staticInfo = {
 
 const HeaderPaciente = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [IdUsuario, setIdUsuario] = useState(null);
+    const [IdUser, setIdUser] = useState(null);
 
     useEffect(() => {
         const auth = getAuth();
@@ -19,13 +19,13 @@ const HeaderPaciente = ({ navigation }) => {
             if (user) {
                 try {
                     // Obtener el pacienteId desde AsyncStorage
-                    const storedIdUsuario = await AsyncStorage.getItem('IdUsuario');
-                    setIdUsuario(storedIdUsuario);
+                    const storedIdUser = await AsyncStorage.getItem('IdUser');
+                    setIdUser(storedIdUser);
                 } catch (error) {
                     console.error('Error al obtener el pacienteId:', error);
                 }
             } else {
-                setIdUsuario(null);
+                setIdUser(null);
             }
         });
         return () => unsubscribe();
@@ -44,7 +44,7 @@ const HeaderPaciente = ({ navigation }) => {
     const handleMisMediciones = () => {
         try {
             setModalVisible(false); 
-            navigation.navigate('Ver Mediciones', { patientId: IdUsuario, userId: IdUsuario  });
+            navigation.navigate('Ver Mediciones', { idPatient: IdUser, idUser: IdUser  });
         } catch (error) {
             console.error('Error al ver mediciones:', error);
         }
@@ -53,7 +53,7 @@ const HeaderPaciente = ({ navigation }) => {
     const handleCargarMedicion = () => {
         try {
             setModalVisible(false); 
-            navigation.navigate('Cargar Medicion', { patientId: IdUsuario });
+            navigation.navigate('Cargar Medicion', { idPatient: IdUser });
         } catch (error) {
             console.error('Error al ver mediciones:', error);
         }
@@ -62,7 +62,7 @@ const HeaderPaciente = ({ navigation }) => {
     const handleMisMedicos = () => {
         try {
             setModalVisible(false); 
-            navigation.navigate('Mis Medicos', { patientId: IdUsuario,userId: IdUsuario});
+            navigation.navigate('Mis Medicos', { idPatient: IdUser, idUser: IdUser});
         } catch (error) {
             console.error('Error al ver medicos', error);
         }
@@ -70,7 +70,8 @@ const HeaderPaciente = ({ navigation }) => {
     const handleArchivos = () => {
             try {
                 setModalVisible(false);
-                navigation.navigate('Ver Archivos', { patientId: IdUsuario, userId: IdUsuario});
+                console.log('IdUser:', IdUser); // Agregado para depuración
+                navigation.navigate('Ver Archivos', { idPatient: IdUser, idUser: IdUser});
             } catch (error) {
                 console.error('Error al ver Archivos', error);
             }

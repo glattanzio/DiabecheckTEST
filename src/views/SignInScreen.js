@@ -30,15 +30,16 @@ const SignInScreen = ({ navigation }) => {
       const data = await response.json();
 
       const role = data.Role;
+      const IdUser = data.IdUser; // Asegúrate de que el backend devuelva el IdUser
       await AsyncStorage.setItem('token', token);
 
       // Navegar a la pantalla adecuada basada en el rol del usuario
+      console.log('Rol del usuario:', role); // Agregado para depuración
+      console.log('IdUser:', IdUser); // Agregado para depuración
       if (role === 'Doctor') {
-        const IdUser = data.IdUser; //paso el IdUser en vez del medicoId porque en la tabla de conexion en la db, usa el userid
         await AsyncStorage.setItem('IdUser', IdUser.toString());
         navigation.navigate('Medico Home View', { IdUser });
       } else if (role === 'Paciente') {
-        const IdUser = data.IdUser;
         await AsyncStorage.setItem('IdUser', IdUser.toString());
         navigation.navigate('Cargar Medicion', { IdUser });
       } else {

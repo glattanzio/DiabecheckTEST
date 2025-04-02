@@ -10,7 +10,7 @@ const staticInfo = {
 
 const HeaderMedico = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false);
-    const [medicoId, setMedicoId] = useState(null);
+    const [idDoctor, setIdDoctor] = useState(null);
 
     useEffect(() => {
         const auth = getAuth();
@@ -18,14 +18,14 @@ const HeaderMedico = ({ navigation }) => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    // Obtener el medicoId desde AsyncStorage
-                    const storedMedicoId = await AsyncStorage.getItem('IdUsuario');
-                    setMedicoId(storedMedicoId);
+                    // Obtener el idDoctor desde AsyncStorage
+                    const storedIdDoctor = await AsyncStorage.getItem('IdUser');
+                    setIdDoctor(storedIdDoctor);
                 } catch (error) {
-                    console.error('Error al obtener el medicoId:', error);
+                    console.error('Error al obtener el idDoctor:', error);
                 }
             } else {
-                setMedicoId(null);
+                setIdDoctor(null);
             }
         });
         return () => unsubscribe();
@@ -44,7 +44,7 @@ const HeaderMedico = ({ navigation }) => {
     const handleMisSolicitudes = () => {
         try {
             setModalVisible(false); 
-            navigation.navigate('Mis Solicitudes', {medicoId: medicoId});
+            navigation.navigate('Mis Solicitudes', {idDoctor: idDoctor});
         } catch (error) {
             console.error('Error al ver solicitudes:', error);
         }
@@ -53,7 +53,7 @@ const HeaderMedico = ({ navigation }) => {
     const handleVerPacientes = () => {
         try {
             setModalVisible(false); 
-            navigation.navigate('Medico Home View', {medicoId: medicoId});
+            navigation.navigate('Medico Home View', {idDoctor: idDoctor});
         } catch (error) {
             console.error('Error al ver solicitudes:', error);
         }
